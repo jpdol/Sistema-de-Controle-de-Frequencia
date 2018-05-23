@@ -12,36 +12,64 @@ def chamar_tela_cadastro(tela_anterior):
 	bt_voltar = Button (tela_cadastro, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_cadastro)).pack(side=BOTTOM, anchor=SW)
 	tela_anterior.destroy()
 
-#def cadastrar_colaborador(tela_anterior):
-	
+def cadastrar_colaborador(tela_anterior):
+	pass
+
 def chamar_tela_cadastro_colaborador(tela_anterior):
 	tela_cadastro_colaborador = Tk()
-	tela_cadastro_colaborador.geometry("500x600+300+100")
+	tela_cadastro_colaborador.geometry("500x650+300+50")
 	tela_cadastro_colaborador.title("Cadastro") 
-	lb = Label(tela_cadastro_colaborador, text="Informe os dados do colaborador", fg="orange", bg="white", font=["Verdana", 16]).pack(pady=50)
+	lb = Label(tela_cadastro_colaborador, text="Informe os dados do colaborador", fg="orange", bg="white", font=["Verdana", 16]).pack(pady=30)
 	
+	#Nome:
 	lb_nome = Label(tela_cadastro_colaborador, text="Nome:", bg="white")
-	lb_nome.place(x=110, y=130)
+	lb_nome.place(x=110, y=100)
 	entrada_nome = Entry(tela_cadastro_colaborador, width=30, bg="white")
-	entrada_nome.place(x=110, y=150)
-	
+	entrada_nome.place(x=110, y=120)
+	#Data de Nascimento
 	lb_dt_nasc = Label(tela_cadastro_colaborador, text="Data de Nascimento:", bg="white")
-	lb_dt_nasc.place(x=110, y=180)
+	lb_dt_nasc.place(x=110, y=150)
 	entrada_dt_nasc = Entry(tela_cadastro_colaborador, width=30, bg="white")
-	entrada_dt_nasc.place(x=110, y=200)
-
-	lb_lab = Label(tela_cadastro_colaborador, text="Laboratorio:", bg="white")
-	lb_lab.place(x=110, y=230)
+	entrada_dt_nasc.place(x=110, y=170)
+	#Laboratório
+	lb_lab = Label(tela_cadastro_colaborador, text="Laboratório:", bg="white")
+	lb_lab.place(x=110, y=200)
 	entrada_lab = Entry(tela_cadastro_colaborador, width=30, bg="white")
-	entrada_lab.place(x=110, y=250)	
+	entrada_lab.place(x=110, y=220)	
+	#Função
+	lb_func = Label(tela_cadastro_colaborador, text="Função:", bg="white")
+	lb_func.place(x=110, y=250)
+	entrada_func = Entry(tela_cadastro_colaborador, width=30, bg="white")
+	entrada_func.place(x=110, y=270)			
+	#Carga Horária
+	lb_CH = Label(tela_cadastro_colaborador, text="Carga Horária semanal:", bg="white")
+	lb_CH.place(x=110, y=300)
+	entrada_CH = Entry(tela_cadastro_colaborador, width=30, bg="white")
+	entrada_CH.place(x=110, y=320)	
+	#Data de Ingresso
+	lb_dt_ing = Label(tela_cadastro_colaborador, text="Data de Ingresso:", bg="white")
+	lb_dt_ing.place(x=110, y=350)
+	entrada_dt_ing = Entry(tela_cadastro_colaborador, width=30, bg="white")
+	entrada_dt_ing.place(x=110, y=370)
+	#Status
+	lb_status = Label(tela_cadastro_colaborador, text="Status:", bg="white")
+	lb_status.place(x=110, y=400)
+	entrada_status = Entry(tela_cadastro_colaborador, width=30, bg="white")
+	entrada_status.place(x=110, y=420)
+	#Senha
+	lb_status = Label(tela_cadastro_colaborador, text="Senha:", bg="white")
+	lb_status.place(x=110, y=450)
+	entrada_status = Entry(tela_cadastro_colaborador, width=30, bg="white")
+	entrada_status.place(x=110, y=470)
+	#Confirme sua Senha
+	lb_status = Label(tela_cadastro_colaborador, text="Confirme sua Senha:", bg="white")
+	lb_status.place(x=110, y=500)
+	entrada_status = Entry(tela_cadastro_colaborador, width=30, bg="white")
+	entrada_status.place(x=110, y=520)
 
-	
-	
 
-
-
-	bt_voltar = Button (tela_cadastro_colaborador, width=10, text="Voltar", bg="white", command=partial(chamar_tela_cadastro, tela_cadastro_colaborador)).pack(side=BOTTOM, anchor=SW)
-	bt_ok = Button(tela_cadastro_colaborador, width=10, bg="white", text="Cadastrar", command=partial(cadastrar_colaborador, tela_cadastro_colaborador)).place(x=275, y=500)
+	bt_voltar = Button(tela_cadastro_colaborador, width=10, text="Voltar", bg="white", command=partial(chamar_tela_cadastro, tela_cadastro_colaborador)).pack(side=BOTTOM, anchor=SW)
+	bt_ok = Button(tela_cadastro_colaborador, width=10, text="Cadastrar", bg="white", command=partial(cadastrar_colaborador, tela_cadastro_colaborador)).place(x=275, y=550)
 	tela_anterior.destroy()
 
 def chamar_tela_cadastro_laboratorio(tela_anterior):

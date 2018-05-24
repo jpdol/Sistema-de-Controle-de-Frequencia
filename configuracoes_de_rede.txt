@@ -1,2 +1,2 @@
-net use * \\LSEHOST
+net use * \\<nome da rede>
 y:

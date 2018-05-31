@@ -1,0 +1,2 @@
+net use * \\<nome da rede>
+y:

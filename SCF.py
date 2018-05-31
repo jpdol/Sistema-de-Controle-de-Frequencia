@@ -9,7 +9,7 @@ def chamar_tela_cadastro(tela_anterior):
 	lb = Label (tela_cadastro, text="O que você deseja cadastrar?", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
 	bt_cadastrar_colaborador = Button (tela_cadastro, width=20, text="Colaborador", bg="white", command=partial(chamar_tela_cadastro_colaborador, tela_cadastro)).pack()
 	bt_cadastrar_laboratorio = Button (tela_cadastro, width=20, text="Laboratório", bg="white", command=partial(chamar_tela_cadastro_laboratorio,tela_cadastro)).pack()
-	bt_voltar = Button (tela_cadastro, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_cadastro)).pack(side=BOTTOM, anchor=SW)
+	bt_voltar = Button (tela_cadastro, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_cadastro)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	tela_anterior.destroy()
 
 def cadastrar_colaborador(tela_anterior):
@@ -68,7 +68,7 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 	entrada_status.place(x=110, y=520)
 
 
-	bt_voltar = Button(tela_cadastro_colaborador, width=10, text="Voltar", bg="white", command=partial(chamar_tela_cadastro, tela_cadastro_colaborador)).pack(side=BOTTOM, anchor=SW)
+	bt_voltar = Button(tela_cadastro_colaborador, width=10, text="Voltar", bg="white", command=partial(chamar_tela_cadastro, tela_cadastro_colaborador)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	bt_ok = Button(tela_cadastro_colaborador, width=10, text="Cadastrar", bg="white", command=partial(cadastrar_colaborador, tela_cadastro_colaborador)).place(x=275, y=550)
 	tela_anterior.destroy()
 
@@ -79,7 +79,7 @@ def chamar_tela_cadastro_laboratorio(tela_anterior):
 	lb = Label(tela_cadastro_laboratorio, text="Informe os dados do laboratório", fg="orange", bg="white", font=["Verdana", 16]).pack(pady=50)
 	lb_nome = Label(tela_cadastro_laboratorio, text="Nome:", bg="white").place(x=110, y=130)
 	entrada_nome = Entry(tela_cadastro_laboratorio, width=30, bg="white").place(x=110, y=150)
-	bt_voltar = Button (tela_cadastro_laboratorio, width=10, text="Voltar", bg="white", command=partial(chamar_tela_cadastro, tela_cadastro_laboratorio)).pack(side=BOTTOM, anchor=SW)
+	bt_voltar = Button (tela_cadastro_laboratorio, width=10, text="Voltar", bg="white", command=partial(chamar_tela_cadastro, tela_cadastro_laboratorio)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	tela_anterior.destroy()
 
 def chamar_tela_consulta(tela_anterior):
@@ -89,7 +89,7 @@ def chamar_tela_consulta(tela_anterior):
 	lb = Label (tela_consulta, text="O que você deseja consultar?", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
 	bt_consultar_colaborador = Button (tela_consulta, width=20, text="Colaborador", bg="white").pack() 
 	bt_consultar_laboratorio = Button (tela_consulta, width=20, text="Laboratório", bg="white").pack()
-	bt_voltar = Button (tela_consulta, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_consulta)).pack(side=BOTTOM, anchor=SW)
+	bt_voltar = Button (tela_consulta, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_consulta)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	tela_anterior.destroy()
 
 

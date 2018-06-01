@@ -4,6 +4,7 @@ from functools import partial
 
 def chamar_tela_cadastro(tela_anterior):
 	tela_cadastro = Tk()
+	tela_cadastro["bg"] = "white"
 	tela_cadastro.geometry("500x300+300+200")
 	tela_cadastro.title("Cadastro") 
 	lb = Label (tela_cadastro, text="O que você deseja cadastrar?", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
@@ -15,8 +16,12 @@ def chamar_tela_cadastro(tela_anterior):
 def cadastrar_colaborador(tela_anterior):
 	pass
 
+def cadastrar_laboratorio(tela_anterior):
+	pass
+
 def chamar_tela_cadastro_colaborador(tela_anterior):
 	tela_cadastro_colaborador = Tk()
+	tela_cadastro_colaborador["bg"] = "white"
 	tela_cadastro_colaborador.geometry("500x650+300+50")
 	tela_cadastro_colaborador.title("Cadastro") 
 	lb = Label(tela_cadastro_colaborador, text="Informe os dados do colaborador", fg="orange", bg="white", font=["Verdana", 16]).pack(pady=30)
@@ -74,16 +79,25 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 
 def chamar_tela_cadastro_laboratorio(tela_anterior):
 	tela_cadastro_laboratorio = Tk()
+	tela_cadastro_laboratorio["bg"]="white"
 	tela_cadastro_laboratorio.geometry("500x300+300+200")
 	tela_cadastro_laboratorio.title("Cadastro") 
 	lb = Label(tela_cadastro_laboratorio, text="Informe os dados do laboratório", fg="orange", bg="white", font=["Verdana", 16]).pack(pady=50)
+	
+	#Nome:
 	lb_nome = Label(tela_cadastro_laboratorio, text="Nome:", bg="white").place(x=110, y=130)
 	entrada_nome = Entry(tela_cadastro_laboratorio, width=30, bg="white").place(x=110, y=150)
+	#Sigla:
+	lb_sigla = Label(tela_cadastro_laboratorio, text="Sigla:", bg="white").place(x=110, y=180)
+	entrada_sigla = Entry(tela_cadastro_laboratorio, width=30, bg="white").place(x=110, y=200)
+
 	bt_voltar = Button (tela_cadastro_laboratorio, width=10, text="Voltar", bg="white", command=partial(chamar_tela_cadastro, tela_cadastro_laboratorio)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
+	bt_ok = Button(tela_cadastro_laboratorio, width=10, text="Cadastrar", bg="white", command=partial(cadastrar_laboratorio, tela_cadastro_laboratorio)).place(x=275, y=230)
 	tela_anterior.destroy()
 
 def chamar_tela_consulta(tela_anterior):
 	tela_consulta = Tk()
+	tela_consulta["bg"]="white"
 	tela_consulta.geometry("500x300+300+200")
 	tela_consulta.title("Consulta") 
 	lb = Label (tela_consulta, text="O que você deseja consultar?", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
@@ -100,6 +114,7 @@ def escolhe_tela(tela_anterior, login):
 
 def chamar_tela_login():
 	tela_login = Tk() 
+	tela_login["bg"]="white"
 	tela_login.geometry("500x300+300+200") #dimensoes da janela --> Largura x Altura + DistanciaDaMargemEsquerda + DistanciaDaMargemSuperior
 	tela_login.title("HUB - Tecnologia e Inovação") #título da janela
 	lb_inicial = Label (tela_login, text="Sistema de Controle de Frequência", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50) #criando rótulo
@@ -117,6 +132,7 @@ def chamar_tela_inicial(tela_anterior):
 	tela_inicial = Tk() #criacao de uma janela - instancia de Tk
 	tela_inicial.geometry("500x300+300+200") #dimensoes da janela --> Largura x Altura + DistanciaDaMargemEsquerda + DistanciaDaMargemSuperior
 	tela_inicial.title("HUB - Tecnologia e Inovação") #título da janela
+	tela_inicial["bg"]="white"
 	lb_inicial = Label (tela_inicial, text="Sistema de Controle de Frequência", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50) #criando rótulo
 	bt_cadastrar = Button (tela_inicial, width=20, text="Cadastrar", command = partial(chamar_tela_cadastro, tela_inicial), bg="white").pack() #criando botao "cadastrar"
 	bt_consultar = Button (tela_inicial, width=20, text="Consultar", command = partial(chamar_tela_consulta, tela_inicial), bg="white").pack() #criando botao "Consultar" 	

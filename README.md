@@ -7,8 +7,8 @@ Sistema para controle de entrada e saída de colaboradores da empresa HUB - Tecn
 
 ### Ferramentas:
 
-  - O projeto será desenvolvido com linguagem de programação Python3.  
-  - Será utilizada a framework Tkinter para programação de interfaces para Desktop.
+  - Linguagem de programação Python3.  
+  - Framework Tkinter para programação de interfaces para Desktop.
 
 ### Desenvolvedores:
   

@@ -12,7 +12,7 @@ Sistema para controle de entrada e saída de colaboradores da empresa HUB - Tecn
 
 ### Desenvolvedores:
   
-  - Jean Lima
-  - Victor Lopes
-  - Diego de Almeida
+  - Jean Lima [(jpdol)](https://github.com/jpdol)
+  - Victor Lopes [(VictorSL97)](https://github.com/VictorSL97)
+  - Diego Ferreira [(DiegoFr75)](https://github.com/DiegoFr75)
 

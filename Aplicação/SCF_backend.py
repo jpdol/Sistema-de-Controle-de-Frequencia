@@ -2,13 +2,11 @@ from tkinter import *
 import SCF_interface as inter
 import sqlite3
 
-
 def criar_conexao():
 	global con
 	con = Conexao()
 
 class Conexao():
-	
 	def __init__(self):
 		self.path = r"C:\Users\ADM\Desktop\SCF\DataBase"
 		self.conexao = sqlite3.connect(self.path+r"\SCF.db")
@@ -28,9 +26,6 @@ def cadastrar_laboratorio(tela_anterior, nome, sigla):
 	except:
 		inter.pop_up_cadastro_invalido()
 	conexao.commit()
-	
-
-
 
 def escolhe_tela(tela_anterior, login):
 	if login.get() == "admin":

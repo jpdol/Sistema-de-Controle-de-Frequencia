@@ -54,20 +54,24 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 	lb_status.place(x=110, y=400)
 	entrada_status = Entry(tela_cadastro_colaborador, width=40, bg="white")
 	entrada_status.place(x=110, y=420)
+	#CPF
+	lb_cpf = Label(tela_cadastro_colaborador, text="CPF:", bg="white")
+	lb_cpf.place(x=110, y=450)
+	entrada_cpf = Entry(tela_cadastro_colaborador, width=40, bg="white")
+	entrada_cpf.place(x=110, y=470)
 	#Senha
-	lb_status = Label(tela_cadastro_colaborador, text="Senha:", bg="white")
-	lb_status.place(x=110, y=450)
-	entrada_status = Entry(tela_cadastro_colaborador, width=40, bg="white")
-	entrada_status.place(x=110, y=470)
+	lb_senha = Label(tela_cadastro_colaborador, text="Senha:", bg="white")
+	lb_senha.place(x=110, y=500)
+	entrada_senha = Entry(tela_cadastro_colaborador, width=40, bg="white")
+	entrada_senha.place(x=110, y=520)
 	#Confirme sua Senha
-	lb_status = Label(tela_cadastro_colaborador, text="Confirme sua Senha:", bg="white")
-	lb_status.place(x=110, y=500)
-	entrada_status = Entry(tela_cadastro_colaborador, width=40, bg="white")
-	entrada_status.place(x=110, y=520)
+	lb_confirma_senha = Label(tela_cadastro_colaborador, text="Confirme sua Senha:", bg="white")
+	lb_confirma_senha.place(x=110, y=550)
+	entrada_confirma_senha = Entry(tela_cadastro_colaborador, width=40, bg="white")
+	entrada_confirma_senha.place(x=110, y=570)
 
-
+	bt_ok = Button(tela_cadastro_colaborador, width=10, text="Cadastrar", bg="white", command=partial(cadastrar_colaborador, tela_cadastro_colaborador, entrada_nome, entrada_dt_nasc, entrada_lab, entrada_func, entrada_CH, entrada_dt_ing, entrada_status, entrada_cpf, entrada_senha, entrada_confirma_senha)).place(x=275, y=600)
 	bt_voltar = Button(tela_cadastro_colaborador, width=10, text="Voltar", bg="white", command=partial(chamar_tela_cadastro, tela_cadastro_colaborador)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
-	bt_ok = Button(tela_cadastro_colaborador, width=10, text="Cadastrar", bg="white", command=partial(cadastrar_colaborador, tela_cadastro_colaborador)).place(x=275, y=550)
 	tela_anterior.destroy()
 
 def chamar_tela_cadastro_laboratorio(tela_anterior):
@@ -103,6 +107,13 @@ def pop_up_cadastro_valido():
 	pop_up.geometry("210x50+450+330")
 	pop_up.title("ERROR") 
 	lb = Label (pop_up, text="Cadastro Realizado com Sucesso", bg="white").pack(pady=20)
+
+def pop_up_confirma_senha():
+	pop_up = Tk()
+	pop_up["bg"]="white"
+	pop_up.geometry("210x50+450+330")
+	pop_up.title("ERROR") 
+	lb = Label (pop_up, text="Confirme sua senha!", bg="white").pack(pady=20)
 
 def chamar_tela_consulta(tela_anterior):
 	tela_consulta = Tk()

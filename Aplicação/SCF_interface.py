@@ -79,14 +79,30 @@ def chamar_tela_cadastro_laboratorio(tela_anterior):
 	
 	#Nome:
 	lb_nome = Label(tela_cadastro_laboratorio, text="Nome:", bg="white").place(x=110, y=130)
-	entrada_nome = Entry(tela_cadastro_laboratorio, width=40, bg="white").place(x=110, y=150)
+	entrada_nome = Entry(tela_cadastro_laboratorio, width=40, bg="white")
+	entrada_nome.place(x=110, y=150)
 	#Sigla:
 	lb_sigla = Label(tela_cadastro_laboratorio, text="Sigla:", bg="white").place(x=110, y=180)
-	entrada_sigla = Entry(tela_cadastro_laboratorio, width=40, bg="white").place(x=110, y=200)
+	entrada_sigla = Entry(tela_cadastro_laboratorio, width=40, bg="white")
+	entrada_sigla.place(x=110, y=200)
 
 	bt_voltar = Button (tela_cadastro_laboratorio, width=10, text="Voltar", bg="white", command=partial(chamar_tela_cadastro, tela_cadastro_laboratorio)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	bt_ok = Button(tela_cadastro_laboratorio, width=10, text="Cadastrar", bg="white", command=partial(cadastrar_laboratorio, tela_cadastro_laboratorio, entrada_nome, entrada_sigla)).place(x=275, y=230)
 	tela_anterior.destroy()
+
+def pop_up_cadastro_invalido():
+	pop_up = Tk()
+	pop_up["bg"]="white"
+	pop_up.geometry("210x50+450+330")
+	pop_up.title("ERROR") 
+	lb = Label (pop_up, text="Cadastro Inválido", bg="white").pack(pady=20)
+	
+def pop_up_cadastro_valido():
+	pop_up = Tk()
+	pop_up["bg"]="white"
+	pop_up.geometry("210x50+450+330")
+	pop_up.title("ERROR") 
+	lb = Label (pop_up, text="Cadastro Realizado com Sucesso", bg="white").pack(pady=20)
 
 def chamar_tela_consulta(tela_anterior):
 	tela_consulta = Tk()

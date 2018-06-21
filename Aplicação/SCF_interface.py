@@ -132,7 +132,7 @@ def chamar_tela_login():
 	tela_login.geometry("500x300+300+200") #dimensoes da janela --> Largura x Altura + DistanciaDaMargemEsquerda + DistanciaDaMargemSuperior
 	tela_login.title("HUB - Tecnologia e Inovação") #título da janela
 	#Logo
-	imagem = PhotoImage(file="static/imagens/hub.png")
+	imagem = PhotoImage(file="imagens/hub.png")
 	lb_image = Label(tela_login, image = imagem, bg="white")
 	lb_image.image = imagem
 	lb_image.place(x=110, y=-5)

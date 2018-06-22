@@ -62,12 +62,12 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 	#Senha
 	lb_senha = Label(tela_cadastro_colaborador, text="Senha:", bg="white")
 	lb_senha.place(x=110, y=500)
-	entrada_senha = Entry(tela_cadastro_colaborador, width=40, bg="white")
+	entrada_senha = Entry(tela_cadastro_colaborador, width=40, bg="white", show="*")
 	entrada_senha.place(x=110, y=520)
 	#Confirme sua Senha
 	lb_confirma_senha = Label(tela_cadastro_colaborador, text="Confirme sua Senha:", bg="white")
 	lb_confirma_senha.place(x=110, y=550)
-	entrada_confirma_senha = Entry(tela_cadastro_colaborador, width=40, bg="white")
+	entrada_confirma_senha = Entry(tela_cadastro_colaborador, width=40, bg="white", show="*")
 	entrada_confirma_senha.place(x=110, y=570)
 
 	bt_ok = Button(tela_cadastro_colaborador, width=10, text="Cadastrar", bg="white", command=partial(cadastrar_colaborador, tela_cadastro_colaborador, entrada_nome, entrada_dt_nasc, entrada_lab, entrada_func, entrada_CH, entrada_dt_ing, entrada_status, entrada_cpf, entrada_senha, entrada_confirma_senha)).place(x=275, y=600)
@@ -142,7 +142,7 @@ def chamar_tela_login():
 	entrada_login = Entry(tela_login, width=40, bg="white")
 	entrada_login.place(x=110, y=160)
 	lb_senha = Label(tela_login, text="Senha:", bg="white").place(x=110, y=190)
-	entrada_senha = Entry(tela_login, width=40, bg="white")
+	entrada_senha = Entry(tela_login, width=40, bg="white", show="*")
 	entrada_senha.place(x=110, y=210)
 	bt_logar = Button(tela_login, width=10, bg="white", text="Login", command=partial(escolhe_tela, tela_login, entrada_login)).place(x=275, y=240)
 	tela_login.mainloop()

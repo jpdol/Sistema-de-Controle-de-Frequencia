@@ -129,22 +129,21 @@ def chamar_tela_consulta(tela_anterior):
 def chamar_tela_login():
 	tela_login = Tk() 
 	tela_login["bg"]="white"
-	tela_login.geometry("500x300+300+200") #dimensoes da janela --> Largura x Altura + DistanciaDaMargemEsquerda + DistanciaDaMargemSuperior
-	tela_login.title("HUB - Tecnologia e Inovação") #título da janela
+	tela_login.geometry("500x350+300+200") #dimensoes da janela --> Largura x Altura + DistanciaDaMargemEsquerda + DistanciaDaMargemSuperior
+	tela_login.title("Sistema de Controle de Frequência") #título da janela
 	#Logo
 	imagem = PhotoImage(file="imagens/hub.png")
 	lb_image = Label(tela_login, image = imagem, bg="white")
 	lb_image.image = imagem
-	lb_image.place(x=110, y=-5)
+	lb_image.pack(pady=30)
 
-	lb_inicial = Label (tela_login, text="Sistema de Controle de Frequência", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=105) #criando rótulo
-	lb_login = Label(tela_login, text="Login:", bg="white").place(x=110, y=140)
+	lb_login = Label(tela_login, text="Login:", bg="white").place(x=120, y=150)
 	entrada_login = Entry(tela_login, width=40, bg="white")
-	entrada_login.place(x=110, y=160)
-	lb_senha = Label(tela_login, text="Senha:", bg="white").place(x=110, y=190)
+	entrada_login.place(x=120, y=170)
+	lb_senha = Label(tela_login, text="Senha:", bg="white").place(x=120, y=200)
 	entrada_senha = Entry(tela_login, width=40, bg="white", show="*")
-	entrada_senha.place(x=110, y=210)
-	bt_logar = Button(tela_login, width=10, bg="white", text="Login", command=partial(escolhe_tela, tela_login, entrada_login)).place(x=275, y=240)
+	entrada_senha.place(x=120, y=220)
+	bt_logar = Button(tela_login, width=10, bg="white", text="Login", command=partial(escolhe_tela, tela_login, entrada_login)).place(x=285, y=250)
 	tela_login.mainloop()
 
 	

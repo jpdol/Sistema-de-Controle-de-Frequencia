@@ -39,7 +39,8 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 	#Função
 	lb_func = Label(tela_cadastro_colaborador, text="Função:", bg="white")
 	lb_func.place(x=110, y=250)
-	entrada_func = Entry(tela_cadastro_colaborador, width=40, bg="white")
+	lista_func = ['Pesquisador', 'Gestor', 'Coordenador', 'ADM', 'Coordenador Geral']
+	entrada_func = ttk.Combobox(tela_cadastro_colaborador, width=37, values=lista_func)
 	entrada_func.place(x=110, y=270)			
 	#Carga Horária
 	lb_CH = Label(tela_cadastro_colaborador, text="Carga Horária semanal:", bg="white")

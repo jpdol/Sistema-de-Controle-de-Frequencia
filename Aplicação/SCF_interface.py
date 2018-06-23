@@ -107,7 +107,7 @@ def pop_up_cadastro_valido():
 	pop_up = Tk()
 	pop_up["bg"]="white"
 	pop_up.geometry("210x50+450+330")
-	pop_up.title("ERROR") 
+	pop_up.title("SUCCESSFUL") 
 	lb = Label (pop_up, text="Cadastro Realizado com Sucesso", bg="white").pack(pady=20)
 
 def pop_up_confirma_senha():

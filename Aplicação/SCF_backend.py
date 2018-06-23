@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 import SCF_interface as inter
 import sqlite3
 
@@ -41,6 +42,15 @@ def cadastrar_laboratorio(tela_anterior, nome, sigla):
 	except:
 		inter.pop_up_cadastro_invalido()
 	conexao.commit()
+
+def retorna_lista_lab():
+	cursor = con.cursor
+	cursor.execute('''SELECT Nome
+				   FROM Laboratorio''')
+	lista = []
+	for nome in cursor.fetchall():
+		lista.append(str(nome[0]))
+	return lista
 	
 
 

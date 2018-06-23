@@ -32,8 +32,10 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 	#Laboratório
 	lb_lab = Label(tela_cadastro_colaborador, text="Laboratório:", bg="white")
 	lb_lab.place(x=110, y=200)
-	entrada_lab = Entry(tela_cadastro_colaborador, width=40, bg="white")
+	lista_lab = retorna_lista_lab()
+	entrada_lab = ttk.Combobox(tela_cadastro_colaborador, width=37)
 	entrada_lab.place(x=110, y=220)	
+	entrada_lab['values'] = lista_lab
 	#Função
 	lb_func = Label(tela_cadastro_colaborador, text="Função:", bg="white")
 	lb_func.place(x=110, y=250)

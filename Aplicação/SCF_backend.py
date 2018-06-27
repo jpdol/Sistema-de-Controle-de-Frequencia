@@ -14,7 +14,7 @@ def criar_conexao():
 class Conexao():
 	def __init__(self):
 		self.path = r"C:\Users\ADM\Desktop\SCF\DataBase"
-		self.conexao = sqlite3.connect("SCF.db")
+		self.conexao = sqlite3.connect(self.path+r"\SCF.db")
 		self.cursor = self.conexao.cursor()
 		self.cursor.execute("CREATE TABLE IF NOT EXISTS Laboratorio (Nome VARCHAR(45), Sigla VARCHAR(45), Logo VARCHAR(45), PRIMARY KEY(Nome, Sigla))")
 		self.cursor.execute("CREATE TABLE IF NOT EXISTS Colaborador (Nome VARCHAR(45), DtNasc DATE, Lab VARCHAR(45), Funcao VARCHAR(45), CH INT, DtIngresso DATE, DtDesligamento DATE, Status VARCHAR(45), cpf VARCHAR(11), foto VARCHAR(45), Senha VARCHAR(45) NOT NULL, PRIMARY KEY(cpf))")

@@ -22,7 +22,7 @@ class Conexao():
 
 def cadastrar_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH, DtIngresso, status, cpf, senha, confirma_senha, foto):
 	if senha.get()!=confirma_senha.get():
-		inter.pop_up_confirma_senha()
+		inter.pop_up("ERROR", "Confirme sua Senha!")
 	else:
 		cursor = con.cursor
 		conexao = con.conexao
@@ -32,10 +32,10 @@ def cadastrar_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH, DtIngres
 		try:
 			ImageMethods.save_image(foto.get(),"users", cpf.get())
 			cursor.execute("INSERT INTO Colaborador (Nome, DtNasc, Lab, Funcao, CH, DtIngresso, Status, cpf, foto, Senha) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (nome.get(), DtNasc.get(), Lab.get(), Funcao.get(), CH.get(), DtIngresso.get(), status.get(), cpf.get(), foto_path, senha.get()))
-			inter.pop_up_cadastro_valido()
+			inter.pop_up("SUCCESSFUL", "Cadastro Realizado com Sucesso")
 			inter.chamar_tela_cadastro_colaborador(tela_anterior)
 		except:
-			inter.pop_up_cadastro_invalido()
+			inter.pop_up("ERROR", "Cadastro Inválido")
 		conexao.commit()
 
 def cadastrar_laboratorio(tela_anterior, nome, sigla, logo):
@@ -47,10 +47,10 @@ def cadastrar_laboratorio(tela_anterior, nome, sigla, logo):
 	try:
 		ImageMethods.save_image(logo.get(), "labs", nome.get())
 		cursor.execute("INSERT INTO Laboratorio VALUES (?, ?, ?)", (nome.get(), sigla.get(), logo_path))
-		inter.pop_up_cadastro_valido()
+		inter.pop_up("SUCCESSFUL", "Cadastro Realizado com Sucesso")
 		inter.chamar_tela_cadastro_laboratorio(tela_anterior)
 	except:
-		inter.pop_up_cadastro_invalido()
+		inter.pop_up("ERROR", "Cadastro Inválido")
 	conexao.commit()
 
 def retorna_lista_lab():
@@ -62,6 +62,13 @@ def retorna_lista_lab():
 		lista.append(str(nome[0]))
 	return lista
 
+def retorna_lista_colab(lab):
+	cursor = con.cursor
+	cursor.execute("SELECT Nome FROM Colaborador WHERE Lab = '%s'"%lab.get())
+	lista = []
+	for nome in cursor.fetchall():
+		lista.append(str(nome[0]))
+	return lista
 
 class ImageMethods():
 	@staticmethod

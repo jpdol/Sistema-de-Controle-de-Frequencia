@@ -16,14 +16,14 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 	tela_anterior.destroy()
 	tela_cadastro_colaborador = Tk()
 	tela_cadastro_colaborador["bg"] = "white"
-	tela_cadastro_colaborador.geometry("500x680+300+40")
+	tela_cadastro_colaborador.geometry("500x680+300+10")
 	tela_cadastro_colaborador.title("Cadastro") 
 	lb = Label(tela_cadastro_colaborador, text="Informe os dados do colaborador", fg="orange", bg="white", font=["Verdana", 16]).pack(pady=30)
 	
-	#Nome:
 	dis_x = 110
 	dis_y_inicial = 70
 
+	#Nome:
 	lb_nome = Label(tela_cadastro_colaborador, text="Nome:", bg="white")
 	lb_nome.place(x=dis_x, y=dis_y_inicial)
 	entrada_nome = Entry(tela_cadastro_colaborador, width=40, bg="white")
@@ -73,7 +73,7 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 	entrada_foto = Entry(tela_cadastro_colaborador, width=40, bg="white", textvariable= line_path)
 	entrada_foto.place(x=dis_x, y=dis_y_inicial+420)
 
-	bt_browser = Button(tela_cadastro_colaborador, text="Browser", bg="white", command=partial(ImageMethods.get_path, line_path))
+	bt_browser = Button(tela_cadastro_colaborador, text="Browser", bg="white", font=['TkDefaultFont', 7], command=partial(ImageMethods.get_path, line_path))
 	bt_browser.place(x=dis_x+250, y=dis_y_inicial+420)
 
 	#Senha
@@ -115,25 +115,19 @@ def chamar_tela_cadastro_laboratorio(tela_anterior):
 	entrada_logo = Entry(tela_cadastro_laboratorio, width=40, bg='white', textvariable = line_path)
 	entrada_logo.place(x=110, y=200)
 		#button
-	bt_browser = Button(tela_cadastro_laboratorio, text='Browser', bg='white', command = partial(ImageMethods.get_path, line_path))
+	bt_browser = Button(tela_cadastro_laboratorio, text='Browser', font=['TkDefaultFont', 7], bg='white', command = partial(ImageMethods.get_path, line_path))
 	bt_browser.place(x=360, y=200)
 
 	bt_voltar = Button (tela_cadastro_laboratorio, width=10, text="Voltar", bg="white", command=partial(chamar_tela_cadastro, tela_cadastro_laboratorio)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	bt_ok = Button(tela_cadastro_laboratorio, width=10, text="Cadastrar", bg="white", command=partial(cadastrar_laboratorio, tela_cadastro_laboratorio, entrada_nome, entrada_sigla, entrada_logo)).place(x=275, y=250)
 
-def pop_up_cadastro_invalido():
-	pop_up = Tk()
-	pop_up["bg"]="white"
-	pop_up.geometry("210x50+450+330")
-	pop_up.title("ERROR") 
-	lb = Label (pop_up, text="Cadastro Inválido", bg="white").pack(pady=20)
 	
-def pop_up_cadastro_valido():
+def pop_up(title, label):
 	pop_up = Tk()
 	pop_up["bg"]="white"
 	pop_up.geometry("210x50+450+330")
-	pop_up.title("SUCCESSFUL") 
-	lb = Label (pop_up, text="Cadastro Realizado com Sucesso", bg="white").pack(pady=20)
+	pop_up.title(title) 
+	lb = Label (pop_up, text=label, bg="white").pack(pady=20)
 
 def pop_up_confirma_senha():
 	pop_up = Tk()
@@ -147,10 +141,40 @@ def chamar_tela_consulta(tela_anterior):
 	tela_consulta["bg"]="white"
 	tela_consulta.geometry("500x300+300+200")
 	tela_consulta.title("Consulta") 
-	lb = Label (tela_consulta, text="O que você deseja consultar?", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
-	bt_consultar_colaborador = Button (tela_consulta, width=20, text="Colaborador", bg="white").pack(pady=3) 
-	bt_consultar_laboratorio = Button (tela_consulta, width=20, text="Laboratório", bg="white").pack(pady=3)
+	lb = Label (tela_consulta, text="Consultar", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
+
+	#lab
+	lb_lab = Label(tela_consulta, text="Laboratório:", bg="white")
+	lb_lab.place(x=110, y=130)
+	lista_lab = retorna_lista_lab()
+	entrada_lab = ttk.Combobox(tela_consulta, width=37)
+	entrada_lab.place(x=110, y=150)	
+	entrada_lab['values'] = lista_lab
+
+	bt_ok = Button(tela_consulta, width=10, text="Avançar", bg="white", command=partial(chamar_tela_consulta_2, tela_consulta, entrada_lab)).place(x=275, y=177)
 	bt_voltar = Button (tela_consulta, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_consulta)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
+	tela_anterior.destroy()
+
+
+def chamar_tela_consulta_2(tela_anterior, lab):
+
+	tela_consulta = Tk()
+	tela_consulta["bg"]="white"
+	tela_consulta.geometry("500x300+300+200")
+	tela_consulta.title("Consulta") 
+	lb = Label (tela_consulta, text="Consultar", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
+
+	#colaborador
+	lb_colab = Label(tela_consulta, text="Colaborador:", bg="white")
+	lb_colab.place(x=110, y=130)
+	
+	lista_colab = ['Todos'] + retorna_lista_colab(lab)
+	entrada_colab = ttk.Combobox(tela_consulta, width=37)
+	entrada_colab.place(x=110, y=150)	
+	entrada_colab['values'] = lista_colab
+
+	bt_ok = Button(tela_consulta, width=10, text="Avançar", bg="white").place(x=275, y=177)
+	bt_voltar = Button (tela_consulta, width=10, text="Voltar", bg="white", command=partial(chamar_tela_consulta, tela_consulta)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	tela_anterior.destroy()
 
 def chamar_tela_login():
@@ -167,6 +191,7 @@ def chamar_tela_login():
 	lb_login = Label(tela_login, text="Login:", bg="white").place(x=120, y=150)
 	entrada_login = Entry(tela_login, width=40, bg="white")
 	entrada_login.place(x=120, y=170)
+	
 	lb_senha = Label(tela_login, text="Senha:", bg="white").place(x=120, y=200)
 	entrada_senha = Entry(tela_login, width=40, bg="white", show="*")
 	entrada_senha.place(x=120, y=220)

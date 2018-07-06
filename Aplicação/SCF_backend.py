@@ -107,4 +107,11 @@ class ImageMethods():
 def validar_login(tela_anterior, login):
 	if login.get() == "admin":
 		inter.chamar_tela_inicial(tela_anterior)
+	else:
+		inter.pop_up("ERROR", "Login ou Senha Inválida")
 	
+def validar_consulta(tela_anterior, lab):
+	if lab.get() != "":
+		inter.chamar_tela_consulta_2(tela_anterior, lab)
+	else:
+		inter.pop_up("ERROR", "Consulta Inválida")

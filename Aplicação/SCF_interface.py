@@ -136,13 +136,6 @@ def pop_up(title, label):
 	pop_up.title(title) 
 	lb = Label (pop_up, text=label, bg="white").pack(pady=20)
 
-def pop_up_confirma_senha():
-	pop_up = Tk()
-	pop_up["bg"]="white"
-	pop_up.geometry("210x50+450+330")
-	pop_up.title("ERROR") 
-	lb = Label (pop_up, text="Confirme sua senha!", bg="white").pack(pady=20)
-
 def chamar_tela_consulta(tela_anterior):
 	tela_consulta = Tk()
 	tela_consulta["bg"]="white"

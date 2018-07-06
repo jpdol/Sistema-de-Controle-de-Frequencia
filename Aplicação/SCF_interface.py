@@ -132,7 +132,7 @@ def chamar_tela_cadastro_laboratorio(tela_anterior):
 def pop_up(title, label):
 	pop_up = Tk()
 	pop_up["bg"]="white"
-	pop_up.geometry("210x50+450+330")
+	pop_up.geometry("210x60+450+330")
 	pop_up.title(title) 
 	lb = Label (pop_up, text=label, bg="white").pack(pady=20)
 

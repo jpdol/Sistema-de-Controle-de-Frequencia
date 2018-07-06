@@ -158,7 +158,7 @@ def chamar_tela_consulta(tela_anterior):
 	entrada_lab.place(x=110, y=150)	
 	entrada_lab['values'] = lista_lab
 
-	bt_ok = Button(tela_consulta, width=10, text="Avançar", bg="white", command=partial(chamar_tela_consulta_2, tela_consulta, entrada_lab)).place(x=275, y=177)
+	bt_ok = Button(tela_consulta, width=10, text="Avançar", bg="white", command=partial(validar_consulta, tela_consulta, entrada_lab)).place(x=275, y=177)
 	bt_voltar = Button (tela_consulta, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_consulta)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	tela_anterior.destroy()
 

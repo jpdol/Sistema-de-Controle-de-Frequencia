@@ -27,11 +27,15 @@ def cadastrar_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH, DtIngres
 		cursor = con.cursor
 		conexao = con.conexao
 
-		file_name = ImageMethods.get_file_name(foto.get(), cpf.get())
-		foto_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "imagens","users",file_name)
 		try:
-			ImageMethods.save_image(foto.get(),"users", cpf.get())
-			cursor.execute("INSERT INTO Colaborador (Nome, DtNasc, Lab, Funcao, CH, DtIngresso, Status, cpf, foto, Senha) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (nome.get(), DtNasc.get(), Lab.get(), Funcao.get(), CH.get(), DtIngresso.get(), status.get(), cpf.get(), foto_path, senha.get()))
+			if foto.get() != "":
+				file_name = ImageMethods.get_file_name(foto.get(), cpf.get())
+				foto_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "imagens","users",file_name)
+				ImageMethods.save_image(foto.get(),"users", cpf.get())
+				cursor.execute("INSERT INTO Colaborador (Nome, DtNasc, Lab, Funcao, CH, DtIngresso, Status, cpf, foto, Senha) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (nome.get(), DtNasc.get(), Lab.get(), Funcao.get(), CH.get(), DtIngresso.get(), status.get(), cpf.get(), foto_path, senha.get()))
+			else:
+				cursor.execute("INSERT INTO Colaborador (Nome, DtNasc, Lab, Funcao, CH, DtIngresso, Status, cpf, foto, Senha) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (nome.get(), DtNasc.get(), Lab.get(), Funcao.get(), CH.get(), DtIngresso.get(), status.get(), cpf.get(), None, senha.get()))
+
 			inter.pop_up("SUCCESSFUL", "Cadastro Realizado com Sucesso")
 			inter.chamar_tela_cadastro_colaborador(tela_anterior)
 		except:
@@ -42,11 +46,15 @@ def cadastrar_laboratorio(tela_anterior, nome, sigla, logo):
 	cursor = con.cursor
 	conexao = con.conexao
 
-	file_name = ImageMethods.get_file_name(logo.get(), nome.get())
-	logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "imagens","labs",file_name )
 	try:
-		ImageMethods.save_image(logo.get(), "labs", nome.get())
-		cursor.execute("INSERT INTO Laboratorio VALUES (?, ?, ?)", (nome.get(), sigla.get(), logo_path))
+		if logo.get() != "":
+			file_name = ImageMethods.get_file_name(logo.get(), nome.get())
+			logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "imagens","labs",file_name )
+			ImageMethods.save_image(logo.get(), "labs", nome.get())
+			cursor.execute("INSERT INTO Laboratorio VALUES (?, ?, ?)", (nome.get(), sigla.get(), logo_path))
+		else:
+			cursor.execute("INSERT INTO Laboratorio VALUES (?, ?, ?)", (nome.get(), sigla.get(), None))
+
 		inter.pop_up("SUCCESSFUL", "Cadastro Realizado com Sucesso")
 		inter.chamar_tela_cadastro_laboratorio(tela_anterior)
 	except:

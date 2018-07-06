@@ -75,19 +75,21 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 
 	bt_browser = Button(tela_cadastro_colaborador, text="Browser", bg="white", font=['TkDefaultFont', 7], command=partial(ImageMethods.get_path, line_path))
 	bt_browser.place(x=dis_x+250, y=dis_y_inicial+420)
+	label_info = Label(tela_cadastro_colaborador, text="*Campo não obrigatório!", font=['TkDefaultFont', 7], bg="white")
+	label_info.place(x=dis_x, y=dis_y_inicial+440)
 
 	#Senha
-	lb_senha = Label(tela_cadastro_colaborador, text="Senha:", bg="white").place(x=dis_x, y=dis_y_inicial+450)
+	lb_senha = Label(tela_cadastro_colaborador, text="Senha:", bg="white").place(x=dis_x, y=dis_y_inicial+460)
 	entrada_senha = Entry(tela_cadastro_colaborador, width=40, bg="white", show="*")
-	entrada_senha.place(x=dis_x, y=dis_y_inicial+470)
+	entrada_senha.place(x=dis_x, y=dis_y_inicial+480)
 	#Confirme sua Senha
-	lb_confirma_senha = Label(tela_cadastro_colaborador, text="Confirme sua Senha:", bg="white").place(x=dis_x, y=dis_y_inicial+500)
+	lb_confirma_senha = Label(tela_cadastro_colaborador, text="Confirme sua Senha:", bg="white").place(x=dis_x, y=dis_y_inicial+510)
 	entrada_confirma_senha = Entry(tela_cadastro_colaborador, width=40, bg="white", show="*")
-	entrada_confirma_senha.place(x=dis_x, y=dis_y_inicial+520)
+	entrada_confirma_senha.place(x=dis_x, y=dis_y_inicial+530)
 
 	bt_ok = Button(tela_cadastro_colaborador, width=10, text="Cadastrar", bg="white", command=partial(cadastrar_colaborador, tela_cadastro_colaborador, entrada_nome, entrada_dt_nasc,
 																									  entrada_lab, entrada_func, entrada_CH, entrada_dt_ing, entrada_status, entrada_cpf,
-																									  entrada_senha, entrada_confirma_senha, entrada_foto)).place(x=275, y=620)
+																									  entrada_senha, entrada_confirma_senha, entrada_foto)).place(x=275, y=625)
 	bt_voltar = Button(tela_cadastro_colaborador, width=10, text="Voltar", bg="white", command=partial(chamar_tela_cadastro, tela_cadastro_colaborador)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	
 
@@ -117,6 +119,9 @@ def chamar_tela_cadastro_laboratorio(tela_anterior):
 		#button
 	bt_browser = Button(tela_cadastro_laboratorio, text='Browser', font=['TkDefaultFont', 7], bg='white', command = partial(ImageMethods.get_path, line_path))
 	bt_browser.place(x=360, y=200)
+
+	label_info = Label(tela_cadastro_laboratorio, text="*Campo não obrigatório!", font=['TkDefaultFont', 7], bg="white")
+	label_info.place(x=110, y=220)
 
 	bt_voltar = Button (tela_cadastro_laboratorio, width=10, text="Voltar", bg="white", command=partial(chamar_tela_cadastro, tela_cadastro_laboratorio)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	bt_ok = Button(tela_cadastro_laboratorio, width=10, text="Cadastrar", bg="white", command=partial(cadastrar_laboratorio, tela_cadastro_laboratorio, entrada_nome, entrada_sigla, entrada_logo)).place(x=275, y=250)

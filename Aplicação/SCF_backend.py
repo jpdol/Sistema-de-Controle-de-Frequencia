@@ -104,7 +104,7 @@ class ImageMethods():
 			file_type = file_type + image_path[i]
 		return  (name + file_type)
 
-def escolhe_tela(tela_anterior, login):
+def validar_login(tela_anterior, login):
 	if login.get() == "admin":
 		inter.chamar_tela_inicial(tela_anterior)
 	

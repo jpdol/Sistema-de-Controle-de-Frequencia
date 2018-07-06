@@ -59,8 +59,10 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 	#Status
 	lb_status = Label(tela_cadastro_colaborador, text="Status:", bg="white")
 	lb_status.place(x=dis_x, y=dis_y_inicial+300)
-	entrada_status = Entry(tela_cadastro_colaborador, width=40, bg="white")
-	entrada_status.place(x=dis_x, y=dis_y_inicial+320)
+	lista_status = ['Ativo', 'Não Ativo', 'Afastado']
+	entrada_status = ttk.Combobox(tela_cadastro_colaborador, width=37)
+	entrada_status.place(x=dis_x, y=dis_y_inicial+320)	
+	entrada_status['values'] = lista_status
 	#CPF
 	lb_cpf = Label(tela_cadastro_colaborador, text="CPF:", bg="white")
 	lb_cpf.place(x=dis_x, y=dis_y_inicial+350)

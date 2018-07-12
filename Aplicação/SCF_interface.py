@@ -168,7 +168,7 @@ def chamar_tela_consulta_2(tela_anterior, lab):
 	lb_colab = Label(tela_consulta, text="Colaborador:", bg="white")
 	lb_colab.place(x=110, y=130)
 	
-	lista_colab = ['Todos'] + retorna_lista_colab(lab)
+	lista_colab = retorna_lista_colab(lab)
 	entrada_colab = ttk.Combobox(tela_consulta, width=37)
 	entrada_colab.place(x=110, y=150)	
 	entrada_colab['values'] = lista_colab
@@ -207,4 +207,5 @@ def chamar_tela_inicial(tela_anterior):
 	lb_inicial = Label (tela_inicial, text="Sistema de Controle de Frequência", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50) #criando rótulo
 	bt_cadastrar = Button (tela_inicial, width=20, text="Cadastrar", command = partial(chamar_tela_cadastro, tela_inicial), bg="white").pack(pady=3) #criando botao "cadastrar"
 	bt_consultar = Button (tela_inicial, width=20, text="Consultar", command = partial(chamar_tela_consulta, tela_inicial), bg="white").pack(pady=3) #criando botao "Consultar" 	
+	bt_hist = Button (tela_inicial, width=20, text="Histórico", bg="white").pack(pady=3) #criando botao "Histórico"
 	tela_anterior.destroy()

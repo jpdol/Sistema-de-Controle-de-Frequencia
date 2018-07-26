@@ -173,9 +173,109 @@ def chamar_tela_consulta_2(tela_anterior, lab):
 	entrada_colab.place(x=110, y=150)	
 	entrada_colab['values'] = lista_colab
 
-	bt_ok = Button(tela_consulta, width=10, text="Avançar", bg="white").place(x=275, y=177)
+	bt_ok = Button(tela_consulta, width=10, text="Avançar", bg="white", command = partial(validar_consulta_2, tela_consulta, entrada_colab)).place(x=275, y=177)
 	bt_voltar = Button (tela_consulta, width=10, text="Voltar", bg="white", command=partial(chamar_tela_consulta, tela_consulta)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	tela_anterior.destroy()
+
+def chamar_tela_dados_colaborador(tela_anterior, nome_colab):
+	colab = retorna_colab(nome_colab)
+	tela_anterior.destroy()
+	tela_cadastro_colaborador = Tk()
+	tela_cadastro_colaborador["bg"] = "white"
+	tela_cadastro_colaborador.geometry("500x680+300+10")
+	tela_cadastro_colaborador.title("Dados Cadastrais") 
+	lb = Label(tela_cadastro_colaborador, text="Dados Cadastrais", fg="orange", bg="white", font=["Verdana", 16]).pack(pady=30)
+	
+	dis_x = 110
+	dis_y_inicial = 70
+
+	#Nome:
+	lb_nome = Label(tela_cadastro_colaborador, text="Nome:", bg="white")
+	lb_nome.place(x=dis_x, y=dis_y_inicial)
+	entrada_nome = Entry(tela_cadastro_colaborador, width=40, bg="white")
+	entrada_nome.place(x=dis_x, y=dis_y_inicial+20)
+	entrada_nome.insert(0, colab.nome)
+	#Data de Nascimento
+	lb_dt_nasc = Label(tela_cadastro_colaborador, text="Data de Nascimento:", bg="white")
+	lb_dt_nasc.place(x=dis_x, y=dis_y_inicial+50)
+	entrada_dt_nasc = Entry(tela_cadastro_colaborador, width=40, bg="white")
+	entrada_dt_nasc.place(x=dis_x, y=dis_y_inicial+70)
+	entrada_dt_nasc.insert(0, colab.DtNasc)
+	#Laboratório
+	lb_lab = Label(tela_cadastro_colaborador, text="Laboratório:", bg="white")
+	lb_lab.place(x=dis_x, y=dis_y_inicial+100)
+	lista_lab = retorna_lista_lab()
+	entrada_lab = ttk.Combobox(tela_cadastro_colaborador, width=37)
+	entrada_lab.place(x=dis_x, y=dis_y_inicial+120)	
+	entrada_lab['values'] = lista_lab
+	entrada_lab.insert(0, colab.Lab)
+	#Função
+	lb_func = Label(tela_cadastro_colaborador, text="Função:", bg="white")
+	lb_func.place(x=dis_x, y=dis_y_inicial+150)
+	lista_func = ['Pesquisador', 'Gestor', 'Coordenador', 'ADM', 'Coordenador Geral']
+	entrada_func = ttk.Combobox(tela_cadastro_colaborador, width=37, values=lista_func)
+	entrada_func.place(x=dis_x, y=dis_y_inicial+170)
+	entrada_func.insert(0, colab.Funcao)			
+	#Carga Horária
+	lb_CH = Label(tela_cadastro_colaborador, text="Carga Horária semanal:", bg="white")
+	lb_CH.place(x=dis_x, y=dis_y_inicial+200)
+	entrada_CH = Entry(tela_cadastro_colaborador, width=40, bg="white")
+	entrada_CH.place(x=dis_x, y=dis_y_inicial+220)	
+	entrada_CH.insert(0, colab.CH)
+	#Data de Ingresso
+	lb_dt_ing = Label(tela_cadastro_colaborador, text="Data de Ingresso:", bg="white")
+	lb_dt_ing.place(x=dis_x, y=dis_y_inicial+250)
+	entrada_dt_ing = Entry(tela_cadastro_colaborador, width=40, bg="white")
+	entrada_dt_ing.place(x=dis_x, y=dis_y_inicial+270)
+	entrada_dt_ing.insert(0, colab.DtIngresso)
+	#Status
+	lb_status = Label(tela_cadastro_colaborador, text="Status:", bg="white")
+	lb_status.place(x=dis_x, y=dis_y_inicial+300)
+	lista_status = ['Ativo', 'Não Ativo', 'Afastado']
+	entrada_status = ttk.Combobox(tela_cadastro_colaborador, width=37)
+	entrada_status.place(x=dis_x, y=dis_y_inicial+320)	
+	entrada_status['values'] = lista_status
+	entrada_status.insert(0, colab.status)
+	#CPF
+	lb_cpf = Label(tela_cadastro_colaborador, text="CPF:", bg="white")
+	lb_cpf.place(x=dis_x, y=dis_y_inicial+350)
+	entrada_cpf = Entry(tela_cadastro_colaborador, width=40, bg="white")
+	entrada_cpf.place(x=dis_x, y=dis_y_inicial+370)
+	entrada_cpf.insert(0, colab.cpf)
+	#Upload Foto
+	line_path = StringVar()
+	lb_foto = Label(tela_cadastro_colaborador, text="Insira a foto do colaborador", bg="white").place(x=dis_x, y=dis_y_inicial+400)
+	entrada_foto = Entry(tela_cadastro_colaborador, width=40, bg="white", textvariable= line_path)
+	entrada_foto.place(x=dis_x, y=dis_y_inicial+420)
+
+	if colab.foto!=None:
+		entrada_foto.insert(0, colab.foto)
+	
+	bt_browser = Button(tela_cadastro_colaborador, text="Browser", bg="white", font=['TkDefaultFont', 7], command=partial(ImageMethods.get_path, line_path))
+	bt_browser.place(x=dis_x+250, y=dis_y_inicial+420)
+	label_info = Label(tela_cadastro_colaborador, text="*Campo não obrigatório!", font=['TkDefaultFont', 7], bg="white")
+	label_info.place(x=dis_x, y=dis_y_inicial+440)
+
+	
+
+	#Senha
+	lb_senha = Label(tela_cadastro_colaborador, text="Senha:", bg="white").place(x=dis_x, y=dis_y_inicial+460)
+	entrada_senha = Entry(tela_cadastro_colaborador, width=40, bg="white", show="*")
+	entrada_senha.place(x=dis_x, y=dis_y_inicial+480)
+	entrada_senha.insert(0, colab.senha)
+
+	#Confirme sua Senha
+	lb_confirma_senha = Label(tela_cadastro_colaborador, text="Confirme sua Senha:", bg="white").place(x=dis_x, y=dis_y_inicial+510)
+	entrada_confirma_senha = Entry(tela_cadastro_colaborador, width=40, bg="white", show="*")
+	entrada_confirma_senha.place(x=dis_x, y=dis_y_inicial+530)
+	entrada_confirma_senha.insert(0, colab.senha)
+
+
+	bt_ok = Button(tela_cadastro_colaborador, width=10, text="Atualizar", bg="white", command=partial(atualizar_cadastro_colaborador, tela_cadastro_colaborador, entrada_nome, entrada_dt_nasc,
+																									  entrada_lab, entrada_func, entrada_CH, entrada_dt_ing, entrada_status, entrada_cpf,
+																									  entrada_senha, entrada_confirma_senha, entrada_foto, nome_colab)).place(x=275, y=625)
+	bt_voltar = Button(tela_cadastro_colaborador, width=10, text="Voltar", bg="white", command=partial(chamar_tela_consulta, tela_cadastro_colaborador)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
+
 
 def chamar_tela_login():
 	tela_login = Tk() 

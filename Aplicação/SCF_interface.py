@@ -6,6 +6,7 @@ def chamar_tela_cadastro(tela_anterior):
 	tela_cadastro["bg"] = "white"
 	tela_cadastro.geometry("500x300+300+200")
 	tela_cadastro.title("Cadastro") 
+	tela_cadastro.resizable(0,0)
 	lb = Label (tela_cadastro, text="O que você deseja cadastrar?", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
 	bt_cadastrar_colaborador = Button (tela_cadastro, width=20, text="Colaborador", bg="white", command=partial(chamar_tela_cadastro_colaborador, tela_cadastro)).pack(pady=3)
 	bt_cadastrar_laboratorio = Button (tela_cadastro, width=20, text="Laboratório", bg="white", command=partial(chamar_tela_cadastro_laboratorio,tela_cadastro)).pack(pady=3)
@@ -18,6 +19,7 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 	tela_cadastro_colaborador["bg"] = "white"
 	tela_cadastro_colaborador.geometry("500x680+300+10")
 	tela_cadastro_colaborador.title("Cadastro") 
+	tela_cadastro_colaborador.resizable(0,0)
 	lb = Label(tela_cadastro_colaborador, text="Informe os dados do colaborador", fg="orange", bg="white", font=["Verdana", 16]).pack(pady=30)
 	
 	dis_x = 110
@@ -101,6 +103,7 @@ def chamar_tela_cadastro_laboratorio(tela_anterior):
 	tela_cadastro_laboratorio["bg"]="white"
 	tela_cadastro_laboratorio.geometry("500x300+300+200")
 	tela_cadastro_laboratorio.title("Cadastro") 
+	tela_cadastro_laboratorio.resizable(0,0)
 	lb = Label(tela_cadastro_laboratorio, text="Informe os dados do laboratório", fg="orange", bg="white", font=["Verdana", 16]).pack(pady=20)
 	
 	#Nome:
@@ -134,13 +137,15 @@ def pop_up(title, label):
 	pop_up["bg"]="white"
 	pop_up.geometry("210x60+450+330")
 	pop_up.title(title) 
+	pop_up.resizable(0,0)
 	lb = Label (pop_up, text=label, bg="white").pack(pady=20)
 
 def chamar_tela_consulta(tela_anterior):
 	tela_consulta = Tk()
 	tela_consulta["bg"]="white"
 	tela_consulta.geometry("500x300+300+200")
-	tela_consulta.title("Consulta") 
+	tela_consulta.title("Consulta")
+	tela_consulta.resizable(0,0) 
 	lb = Label (tela_consulta, text="Consultar", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
 
 	#lab
@@ -162,6 +167,7 @@ def chamar_tela_consulta_2(tela_anterior, lab):
 	tela_consulta["bg"]="white"
 	tela_consulta.geometry("500x300+300+200")
 	tela_consulta.title("Consulta") 
+	tela_consulta.resizable(0,0)
 	lb = Label (tela_consulta, text="Consultar", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
 
 	#colaborador
@@ -184,6 +190,7 @@ def chamar_tela_dados_colaborador(tela_anterior, nome_colab):
 	tela_cadastro_colaborador["bg"] = "white"
 	tela_cadastro_colaborador.geometry("500x680+300+10")
 	tela_cadastro_colaborador.title("Dados Cadastrais") 
+	tela_cadastro_colaborador.resizable(0,0)
 	lb = Label(tela_cadastro_colaborador, text="Dados Cadastrais", fg="orange", bg="white", font=["Verdana", 16]).pack(pady=30)
 	
 	dis_x = 110
@@ -276,6 +283,7 @@ def chamar_tela_login():
 	tela_login["bg"]="white"
 	tela_login.geometry("500x350+300+200") #dimensoes da janela --> Largura x Altura + DistanciaDaMargemEsquerda + DistanciaDaMargemSuperior
 	tela_login.title("Sistema de Controle de Frequência") #título da janela
+	tela_login.resizable(0,0)
 
 	#Logo
 	imagem = PhotoImage(file="imagens/hub.png")
@@ -298,6 +306,7 @@ def chamar_tela_inicial(tela_anterior):
 	tela_inicial.geometry("500x300+300+200") #dimensoes da janela --> Largura x Altura + DistanciaDaMargemEsquerda + DistanciaDaMargemSuperior
 	tela_inicial.title("HUB - Tecnologia e Inovação") #título da janela
 	tela_inicial["bg"]="white"
+	tela_inicial.resizable(0,0)
 	lb_inicial = Label (tela_inicial, text="Sistema de Controle de Frequência", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50) #criando rótulo
 	bt_cadastrar = Button (tela_inicial, width=20, text="Cadastrar", command = partial(chamar_tela_cadastro, tela_inicial), bg="white").pack(pady=3) #criando botao "cadastrar"
 	bt_consultar = Button (tela_inicial, width=20, text="Consultar", command = partial(chamar_tela_consulta, tela_inicial), bg="white").pack(pady=3) #criando botao "Consultar" 	

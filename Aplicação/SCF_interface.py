@@ -236,45 +236,39 @@ def chamar_tela_dados_colaborador(tela_anterior, nome_colab):
 	entrada_status.place(x=dis_x, y=dis_y_inicial+320)	
 	entrada_status['values'] = lista_status
 	entrada_status.insert(0, colab.status)
-	#CPF
-	lb_cpf = Label(tela_cadastro_colaborador, text="CPF:", bg="white")
-	lb_cpf.place(x=dis_x, y=dis_y_inicial+350)
-	entrada_cpf = Entry(tela_cadastro_colaborador, width=40, bg="white")
-	entrada_cpf.place(x=dis_x, y=dis_y_inicial+370)
-	entrada_cpf.insert(0, colab.cpf)
+
 	#Upload Foto
 	line_path = StringVar()
-	lb_foto = Label(tela_cadastro_colaborador, text="Insira a foto do colaborador", bg="white").place(x=dis_x, y=dis_y_inicial+400)
+	lb_foto = Label(tela_cadastro_colaborador, text="Insira a foto do colaborador", bg="white").place(x=dis_x, y=dis_y_inicial+350)
 	entrada_foto = Entry(tela_cadastro_colaborador, width=40, bg="white", textvariable= line_path)
-	entrada_foto.place(x=dis_x, y=dis_y_inicial+420)
+	entrada_foto.place(x=dis_x, y=dis_y_inicial+370)
 
-	if colab.foto!=None:
-		entrada_foto.insert(0, colab.foto)
 	
 	bt_browser = Button(tela_cadastro_colaborador, text="Browser", bg="white", font=['TkDefaultFont', 7], command=partial(ImageMethods.get_path, line_path))
-	bt_browser.place(x=dis_x+250, y=dis_y_inicial+420)
+	bt_browser.place(x=dis_x+250, y=dis_y_inicial+370)
 	label_info = Label(tela_cadastro_colaborador, text="*Campo não obrigatório!", font=['TkDefaultFont', 7], bg="white")
-	label_info.place(x=dis_x, y=dis_y_inicial+440)
+	label_info.place(x=dis_x, y=dis_y_inicial+390)
 
 	
-
-	#Senha
-	lb_senha = Label(tela_cadastro_colaborador, text="Senha:", bg="white").place(x=dis_x, y=dis_y_inicial+460)
+	lb_senha = Label(tela_cadastro_colaborador, text="Senha:", bg="white").place(x=dis_x, y=dis_y_inicial+410)
 	entrada_senha = Entry(tela_cadastro_colaborador, width=40, bg="white", show="*")
-	entrada_senha.place(x=dis_x, y=dis_y_inicial+480)
-	entrada_senha.insert(0, colab.senha)
+	entrada_senha.place(x=dis_x, y=dis_y_inicial+430)
+	entrada_senha.insert(0, colab.Senha)
 
+	
 	#Confirme sua Senha
-	lb_confirma_senha = Label(tela_cadastro_colaborador, text="Confirme sua Senha:", bg="white").place(x=dis_x, y=dis_y_inicial+510)
+	lb_confirma_senha = Label(tela_cadastro_colaborador, text="Confirme sua Senha:", bg="white").place(x=dis_x, y=dis_y_inicial+460)
 	entrada_confirma_senha = Entry(tela_cadastro_colaborador, width=40, bg="white", show="*")
-	entrada_confirma_senha.place(x=dis_x, y=dis_y_inicial+530)
-	entrada_confirma_senha.insert(0, colab.senha)
+	entrada_confirma_senha.place(x=dis_x, y=dis_y_inicial+480)
+	entrada_confirma_senha.insert(0, colab.Senha)
 
 
 	bt_ok = Button(tela_cadastro_colaborador, width=10, text="Atualizar", bg="white", command=partial(atualizar_cadastro_colaborador, tela_cadastro_colaborador, entrada_nome, entrada_dt_nasc,
-																									  entrada_lab, entrada_func, entrada_CH, entrada_dt_ing, entrada_status, entrada_cpf,
-																									  entrada_senha, entrada_confirma_senha, entrada_foto, nome_colab)).place(x=275, y=625)
+																									  entrada_lab, entrada_func, entrada_CH, entrada_dt_ing, entrada_status,
+																									  entrada_senha, entrada_confirma_senha, entrada_foto, nome_colab, colab.cpf)).place(x=275, y=600)
 	bt_voltar = Button(tela_cadastro_colaborador, width=10, text="Voltar", bg="white", command=partial(chamar_tela_consulta, tela_cadastro_colaborador)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
+	
+
 
 
 def chamar_tela_login():

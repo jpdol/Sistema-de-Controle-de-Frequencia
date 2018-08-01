@@ -3,41 +3,49 @@ from tkinter import ttk
 from tkinter.filedialog import askopenfilename
 import SCF_interface as inter
 import sqlite3
-import os
 
-
+ 
+user = None
 
 def criar_conexao():
 	global con
 	con = Conexao()
 
+# def criar_user():
+# 	global user
+# 	user = None
+
 class Conexao():
 	def __init__(self):
 		self.path = r"DataBase"
-		self.conexao = sqlite3.connect(self.path+r"\SCF.db")
+		self.conexao = sqlite3.connect(self.path + r"\SCF.db")
 		self.cursor = self.conexao.cursor()
 		self.cursor.execute("CREATE TABLE IF NOT EXISTS Laboratorio (Nome VARCHAR(45), Sigla VARCHAR(45), Logo BLOB, Image_type VARCHAR(3), PRIMARY KEY(Nome, Sigla))")
 		self.cursor.execute("CREATE TABLE IF NOT EXISTS Colaborador (Nome VARCHAR(45), DtNasc DATE, Lab VARCHAR(45), Funcao VARCHAR(45), CH INT, DtIngresso DATE, DtDesligamento DATE, Status VARCHAR(45), cpf VARCHAR(11), Foto BLOB, Image_type VARCHAR(3), Senha VARCHAR(45) NOT NULL, PRIMARY KEY(cpf))")
 
 
 def cadastrar_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH, DtIngresso, status, cpf, senha, confirma_senha, foto):
-	if senha.get()!=confirma_senha.get():
+	if senha.get() != confirma_senha.get():
 		inter.pop_up("ERROR", "Confirme sua Senha!")
 	else:
 		cursor = con.cursor
 		conexao = con.conexao
 
 		try:
-			if foto.get() != "":
-				file_type = ImageMethods.get_file_type(foto.get())
-				file_binary = ImageMethods.get_binary(foto.get())
-				cursor.execute("INSERT INTO Colaborador (Nome, DtNasc, Lab, Funcao, CH, DtIngresso, Status, cpf, Foto, Image_type, Senha) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (nome.get(), DtNasc.get(), Lab.get(), Funcao.get(), CH.get(), DtIngresso.get(), status.get(), cpf.get(), file_binary, file_type, senha.get()))
+			if Lab.get() != "*Selecione o laboratório*":
+				if foto.get() != "":
+					file_type = ImageMethods.get_file_type(foto.get())
+					file_binary = ImageMethods.get_binary(foto.get())
+					cursor.execute("INSERT INTO Colaborador (Nome, DtNasc, Lab, Funcao, CH, DtIngresso, Status, cpf, Foto, Image_type, Senha) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (nome.get(), DtNasc.get(), Lab.get(), Funcao.get(), CH.get(), DtIngresso.get(), status.get(), cpf.get(), file_binary, file_type, senha.get()))
+				else:
+					cursor.execute("INSERT INTO Colaborador (Nome, DtNasc, Lab, Funcao, CH, DtIngresso, Status, cpf, Foto, Image_type, Senha) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (nome.get(), DtNasc.get(), Lab.get(), Funcao.get(), CH.get(), DtIngresso.get(), status.get(), cpf.get(), None, None, senha.get()))
 			else:
-				cursor.execute("INSERT INTO Colaborador (Nome, DtNasc, Lab, Funcao, CH, DtIngresso, Status, cpf, Foto, Image_type, Senha) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (nome.get(), DtNasc.get(), Lab.get(), Funcao.get(), CH.get(), DtIngresso.get(), status.get(), cpf.get(), None, None, senha.get()))
+				inter.pop_up("ERROR", "Cadastro Inválido!")
+				return False
 
 			inter.pop_up("SUCCESSFUL", "Cadastro Realizado com Sucesso")
 			inter.chamar_tela_cadastro_colaborador(tela_anterior)
-		except:
+		except Exception as e:
 			inter.pop_up("ERROR", "Cadastro Inválido")
 		conexao.commit()
 
@@ -91,27 +99,35 @@ def retorna_lista_lab():
 
 def retorna_lista_colab(lab):
 	cursor = con.cursor
-	cursor.execute("SELECT Nome FROM Colaborador WHERE Lab = '%s'"%lab.get())
+	cursor.execute("SELECT Nome FROM Colaborador WHERE Lab = '%s'"%lab)
 	lista = []
 	for nome in cursor.fetchall():
 		lista.append(str(nome[0]))
 	return lista
 
 class Colaborador():
-	def __init__(self, nome, DtNasc, Lab, Funcao, CH, DtIngresso, status, cpf, Senha):
+	def __init__(self, nome, dtNasc, lab, funcao, ch, dtIngresso, status, cpf, senha):
 		self.nome = nome
-		self.DtNasc = DtNasc
-		self.Lab = Lab
-		self.Funcao = Funcao
-		self.CH = CH
-		self.DtIngresso = DtIngresso
+		self.dtNasc = dtNasc
+		self.lab = lab
+		self.funcao = funcao
+		self.ch = ch
+		self.dtIngresso = dtIngresso
 		self.status = status
 		self.cpf = cpf
-		self.Senha = Senha
+		self.senha = senha
 
 def retorna_colab(nome):
 	cursor = con.cursor
 	cursor.execute("SELECT * FROM Colaborador WHERE Nome = '%s'"%nome.get())
+	lista = cursor.fetchall()
+	tupla = lista[0]
+	colab = Colaborador(tupla[0], tupla[1], tupla[2], tupla[3], tupla[4], tupla[5], tupla[7], tupla[8], tupla[11])
+	return colab
+
+def retorna_user(cpf):
+	cursor = con.cursor
+	cursor.execute("SELECT * FROM Colaborador WHERE cpf = '%s'"%cpf)
 	lista = cursor.fetchall()
 	tupla = lista[0]
 	colab = Colaborador(tupla[0], tupla[1], tupla[2], tupla[3], tupla[4], tupla[5], tupla[7], tupla[8], tupla[11])
@@ -141,15 +157,54 @@ class ImageMethods():
 			file_type = file_type + image_path[i]
 		return  (file_type)
 
-def validar_login(tela_anterior, login):
-	if login.get() == "admin":
-		inter.chamar_tela_inicial(tela_anterior)
+def validar_login(tela_anterior, login, senha):
+	if (login.get() != "") and (senha.get() != ""):
+		try:
+			colab = retorna_user(login.get())
+
+			if (colab.senha == senha.get()) and (colab.status == "Ativo") and (colab.funcao != "Pesquisador"):
+				atualizar_user(colab)
+				inter.chamar_tela_inicial(tela_anterior)
+
+			else:
+				inter.pop_up("ERROR", "Login ou Senha Inválida")
+
+		except Exception as e:
+			inter.pop_up("ERROR", "Login ou Senha Inválida")
+
 	else:
 		inter.pop_up("ERROR", "Login ou Senha Inválida")
+
+def atualizar_user(colab):
+	global user
+	user = colab
+
+def deletar_colab_bd(cpf):
+	try:
+		cursor = con.cursor
+		cursor.execute("DELETE FROM Colaborador WHERE cpf= '%s';"%cpf)
+		con.conexao.commit()
+	except:
+		inter.pop_up("ERROR", "Não foi possível remover o colaborador.")
+
+def excluir_colaborador(tela_anterior, cpf, lab):
+	
+	if user.cpf != cpf:
+		deletar_colab_bd(cpf)
+		inter.chamar_tela_consulta_2(tela_anterior, lab)
+	else:
+		inter.pop_up("ERROR", "Não é permitido excluir o próprio usuário.")
+	
+
+def deslogar(tela_anterior):
+	tela_anterior.destroy()
+	inter.chamar_tela_login()
+	atualizar_user(None)
+
 	
 def validar_consulta(tela_anterior, lab):
-	if lab.get() != "":
-		inter.chamar_tela_consulta_2(tela_anterior, lab)
+	if lab.get() != "" and lab.get() != "*Selecione o laboratório*":
+		inter.chamar_tela_consulta_2(tela_anterior, lab.get())
 	else:
 		inter.pop_up("ERROR", "Consulta Inválida")
 
@@ -157,5 +212,6 @@ def validar_consulta_2(tela_anterior, nome_colab):
 	try:
 		colab = retorna_colab(nome_colab)
 		inter.chamar_tela_dados_colaborador(tela_anterior, nome_colab)
-	except:
+	except Exception as e:
+		print(e)
 		inter.pop_up("ERROR", "Consulta Inválida")

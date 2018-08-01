@@ -1,5 +1,7 @@
 from SCF_backend import *
+import SCF_backend
 from functools import partial
+
 
 def chamar_tela_cadastro(tela_anterior):
 	tela_cadastro = Tk()
@@ -7,9 +9,14 @@ def chamar_tela_cadastro(tela_anterior):
 	tela_cadastro.geometry("500x300+300+200")
 	tela_cadastro.title("Cadastro") 
 	tela_cadastro.resizable(0,0)
+
 	lb = Label (tela_cadastro, text="O que você deseja cadastrar?", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
-	bt_cadastrar_colaborador = Button (tela_cadastro, width=20, text="Colaborador", bg="white", command=partial(chamar_tela_cadastro_colaborador, tela_cadastro)).pack(pady=3)
-	bt_cadastrar_laboratorio = Button (tela_cadastro, width=20, text="Laboratório", bg="white", command=partial(chamar_tela_cadastro_laboratorio,tela_cadastro)).pack(pady=3)
+
+	if SCF_backend.user.funcao in ['ADM', 'Coordenador Geral']:
+		bt_cadastrar_colaborador = Button (tela_cadastro, width=20, text="Colaborador", bg="white", command=partial(chamar_tela_cadastro_colaborador, tela_cadastro)).pack(pady=3)
+		bt_cadastrar_laboratorio = Button (tela_cadastro, width=20, text="Laboratório", bg="white", command=partial(chamar_tela_cadastro_laboratorio,tela_cadastro)).pack(pady=3)
+	else:
+		bt_cadastrar_colaborador = Button (tela_cadastro, width=20, text="Colaborador", bg="white", command=partial(chamar_tela_cadastro_colaborador, tela_cadastro)).pack(pady=3)
 	bt_voltar = Button (tela_cadastro, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_cadastro)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	tela_anterior.destroy()
 
@@ -38,16 +45,26 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 	#Laboratório
 	lb_lab = Label(tela_cadastro_colaborador, text="Laboratório:", bg="white")
 	lb_lab.place(x=dis_x, y=dis_y_inicial+100)
-	lista_lab = retorna_lista_lab()
-	entrada_lab = ttk.Combobox(tela_cadastro_colaborador, width=37)
+
+	if SCF_backend.user.funcao in ['ADM', 'Coordenador Geral']:	
+		lista_lab = retorna_lista_lab()
+		lista_lab.insert(0, "*Selecione o laboratório*")
+		lista_func = ['Pesquisador', 'Gestor', 'Coordenador', 'ADM', 'Coordenador Geral']
+
+	else:
+		lista_func = ['Pesquisador', 'Gestor', 'Coordenador']
+		lista_lab = [SCF_backend.user.lab]
+
+	entrada_lab = ttk.Combobox(tela_cadastro_colaborador, width=37, state="readonly")
 	entrada_lab.place(x=dis_x, y=dis_y_inicial+120)	
 	entrada_lab['values'] = lista_lab
+	entrada_lab.current(0)
 	#Função
 	lb_func = Label(tela_cadastro_colaborador, text="Função:", bg="white")
 	lb_func.place(x=dis_x, y=dis_y_inicial+150)
-	lista_func = ['Pesquisador', 'Gestor', 'Coordenador', 'ADM', 'Coordenador Geral']
-	entrada_func = ttk.Combobox(tela_cadastro_colaborador, width=37, values=lista_func)
-	entrada_func.place(x=dis_x, y=dis_y_inicial+170)			
+	entrada_func = ttk.Combobox(tela_cadastro_colaborador, width=37, values=lista_func, state="readonly")
+	entrada_func.place(x=dis_x, y=dis_y_inicial+170)	
+	entrada_func.current(0)		
 	#Carga Horária
 	lb_CH = Label(tela_cadastro_colaborador, text="Carga Horária semanal:", bg="white")
 	lb_CH.place(x=dis_x, y=dis_y_inicial+200)
@@ -62,9 +79,10 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 	lb_status = Label(tela_cadastro_colaborador, text="Status:", bg="white")
 	lb_status.place(x=dis_x, y=dis_y_inicial+300)
 	lista_status = ['Ativo', 'Não Ativo', 'Afastado']
-	entrada_status = ttk.Combobox(tela_cadastro_colaborador, width=37)
+	entrada_status = ttk.Combobox(tela_cadastro_colaborador, width=37, state="readonly")
 	entrada_status.place(x=dis_x, y=dis_y_inicial+320)	
 	entrada_status['values'] = lista_status
+	entrada_status.current(0)
 	#CPF
 	lb_cpf = Label(tela_cadastro_colaborador, text="CPF:", bg="white")
 	lb_cpf.place(x=dis_x, y=dis_y_inicial+350)
@@ -135,7 +153,7 @@ def chamar_tela_cadastro_laboratorio(tela_anterior):
 def pop_up(title, label):
 	pop_up = Tk()
 	pop_up["bg"]="white"
-	pop_up.geometry("210x60+450+330")
+	pop_up.geometry("250x60+450+330")
 	pop_up.title(title) 
 	pop_up.resizable(0,0)
 	lb = Label (pop_up, text=label, bg="white").pack(pady=20)
@@ -152,9 +170,12 @@ def chamar_tela_consulta(tela_anterior):
 	lb_lab = Label(tela_consulta, text="Laboratório:", bg="white")
 	lb_lab.place(x=110, y=130)
 	lista_lab = retorna_lista_lab()
-	entrada_lab = ttk.Combobox(tela_consulta, width=37)
+	lista_lab.insert(0,"*Selecione o laboratório*")
+
+	entrada_lab = ttk.Combobox(tela_consulta, width=37, state="readonly")
 	entrada_lab.place(x=110, y=150)	
 	entrada_lab['values'] = lista_lab
+	entrada_lab.current(0)
 
 	bt_ok = Button(tela_consulta, width=10, text="Avançar", bg="white", command=partial(validar_consulta, tela_consulta, entrada_lab)).place(x=275, y=177)
 	bt_voltar = Button (tela_consulta, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_consulta)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
@@ -173,14 +194,20 @@ def chamar_tela_consulta_2(tela_anterior, lab):
 	#colaborador
 	lb_colab = Label(tela_consulta, text="Colaborador:", bg="white")
 	lb_colab.place(x=110, y=130)
-	
+
 	lista_colab = retorna_lista_colab(lab)
-	entrada_colab = ttk.Combobox(tela_consulta, width=37)
+	lista_colab.insert(0,"*Selecione o colaborador*")
+
+	entrada_colab = ttk.Combobox(tela_consulta, width=37, state="readonly")
 	entrada_colab.place(x=110, y=150)	
 	entrada_colab['values'] = lista_colab
+	entrada_colab.current(0)		
 
 	bt_ok = Button(tela_consulta, width=10, text="Avançar", bg="white", command = partial(validar_consulta_2, tela_consulta, entrada_colab)).place(x=275, y=177)
-	bt_voltar = Button (tela_consulta, width=10, text="Voltar", bg="white", command=partial(chamar_tela_consulta, tela_consulta)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
+	if SCF_backend.user.funcao in ['ADM', 'Coordenador Geral']:
+		bt_voltar = Button (tela_consulta, width=10, text="Voltar", bg="white", command=partial(chamar_tela_consulta, tela_consulta)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
+	else:
+		bt_voltar = Button (tela_consulta, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_consulta)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	tela_anterior.destroy()
 
 def chamar_tela_dados_colaborador(tela_anterior, nome_colab):
@@ -207,42 +234,43 @@ def chamar_tela_dados_colaborador(tela_anterior, nome_colab):
 	lb_dt_nasc.place(x=dis_x, y=dis_y_inicial+50)
 	entrada_dt_nasc = Entry(tela_cadastro_colaborador, width=40, bg="white")
 	entrada_dt_nasc.place(x=dis_x, y=dis_y_inicial+70)
-	entrada_dt_nasc.insert(0, colab.DtNasc)
+	entrada_dt_nasc.insert(0, colab.dtNasc)
 	#Laboratório
 	lb_lab = Label(tela_cadastro_colaborador, text="Laboratório:", bg="white")
 	lb_lab.place(x=dis_x, y=dis_y_inicial+100)
+
 	lista_lab = retorna_lista_lab()
-	entrada_lab = ttk.Combobox(tela_cadastro_colaborador, width=37)
+	entrada_lab = ttk.Combobox(tela_cadastro_colaborador, width=37, state="readonly")
 	entrada_lab.place(x=dis_x, y=dis_y_inicial+120)	
 	entrada_lab['values'] = lista_lab
-	entrada_lab.insert(0, colab.Lab)
+	entrada_lab.current(lista_lab.index(colab.lab))
 	#Função
 	lb_func = Label(tela_cadastro_colaborador, text="Função:", bg="white")
 	lb_func.place(x=dis_x, y=dis_y_inicial+150)
 	lista_func = ['Pesquisador', 'Gestor', 'Coordenador', 'ADM', 'Coordenador Geral']
-	entrada_func = ttk.Combobox(tela_cadastro_colaborador, width=37, values=lista_func)
+	entrada_func = ttk.Combobox(tela_cadastro_colaborador, width=37, values=lista_func, state="readonly")
 	entrada_func.place(x=dis_x, y=dis_y_inicial+170)
-	entrada_func.insert(0, colab.Funcao)			
+	entrada_func.current(lista_func.index(colab.funcao))		
 	#Carga Horária
 	lb_CH = Label(tela_cadastro_colaborador, text="Carga Horária semanal:", bg="white")
 	lb_CH.place(x=dis_x, y=dis_y_inicial+200)
 	entrada_CH = Entry(tela_cadastro_colaborador, width=40, bg="white")
 	entrada_CH.place(x=dis_x, y=dis_y_inicial+220)	
-	entrada_CH.insert(0, colab.CH)
+	entrada_CH.insert(0, colab.ch)
 	#Data de Ingresso
 	lb_dt_ing = Label(tela_cadastro_colaborador, text="Data de Ingresso:", bg="white")
 	lb_dt_ing.place(x=dis_x, y=dis_y_inicial+250)
 	entrada_dt_ing = Entry(tela_cadastro_colaborador, width=40, bg="white")
 	entrada_dt_ing.place(x=dis_x, y=dis_y_inicial+270)
-	entrada_dt_ing.insert(0, colab.DtIngresso)
+	entrada_dt_ing.insert(0, colab.dtIngresso)
 	#Status
 	lb_status = Label(tela_cadastro_colaborador, text="Status:", bg="white")
 	lb_status.place(x=dis_x, y=dis_y_inicial+300)
 	lista_status = ['Ativo', 'Não Ativo', 'Afastado']
-	entrada_status = ttk.Combobox(tela_cadastro_colaborador, width=37)
+	entrada_status = ttk.Combobox(tela_cadastro_colaborador, width=37, state="readonly")
 	entrada_status.place(x=dis_x, y=dis_y_inicial+320)	
 	entrada_status['values'] = lista_status
-	entrada_status.insert(0, colab.status)
+	entrada_status.current(lista_status.index(colab.status))
 
 	#Upload Foto
 	line_path = StringVar()
@@ -260,26 +288,29 @@ def chamar_tela_dados_colaborador(tela_anterior, nome_colab):
 	lb_senha = Label(tela_cadastro_colaborador, text="Senha:", bg="white").place(x=dis_x, y=dis_y_inicial+410)
 	entrada_senha = Entry(tela_cadastro_colaborador, width=40, bg="white", show="*")
 	entrada_senha.place(x=dis_x, y=dis_y_inicial+430)
-	entrada_senha.insert(0, colab.Senha)
+	entrada_senha.insert(0, colab.senha)
 
 	
 	#Confirme sua Senha
 	lb_confirma_senha = Label(tela_cadastro_colaborador, text="Confirme sua Senha:", bg="white").place(x=dis_x, y=dis_y_inicial+460)
 	entrada_confirma_senha = Entry(tela_cadastro_colaborador, width=40, bg="white", show="*")
 	entrada_confirma_senha.place(x=dis_x, y=dis_y_inicial+480)
-	entrada_confirma_senha.insert(0, colab.Senha)
+	entrada_confirma_senha.insert(0, colab.senha)
 
 
 	bt_ok = Button(tela_cadastro_colaborador, width=10, text="Atualizar", bg="white", command=partial(atualizar_cadastro_colaborador, tela_cadastro_colaborador, entrada_nome, entrada_dt_nasc,
 																									  entrada_lab, entrada_func, entrada_CH, entrada_dt_ing, entrada_status,
-																									  entrada_senha, entrada_confirma_senha, entrada_foto, nome_colab, colab.cpf)).place(x=275, y=600)
-	bt_voltar = Button(tela_cadastro_colaborador, width=10, text="Voltar", bg="white", command=partial(chamar_tela_consulta, tela_cadastro_colaborador)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
+																							  entrada_senha, entrada_confirma_senha, entrada_foto, nome_colab, colab.cpf)).place(x=275, y=600)
+
+	bt_remover = Button(tela_cadastro_colaborador, width=20, text="Excluir colaborador", bg="white", command=partial(excluir_colaborador, tela_cadastro_colaborador, colab.cpf, colab.lab)).pack(side=RIGHT, anchor = SE, pady=4, padx=4)
+
+	bt_voltar = Button(tela_cadastro_colaborador, width=10, text="Voltar", bg="white", command=partial(chamar_tela_consulta_2, tela_cadastro_colaborador, colab.lab)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	
 
 
 
 def chamar_tela_login():
-	tela_login = Tk() 
+	tela_login = Tk()
 	tela_login["bg"]="white"
 	tela_login.geometry("500x350+300+200") #dimensoes da janela --> Largura x Altura + DistanciaDaMargemEsquerda + DistanciaDaMargemSuperior
 	tela_login.title("Sistema de Controle de Frequência") #título da janela
@@ -297,7 +328,7 @@ def chamar_tela_login():
 	lb_senha = Label(tela_login, text="Senha:", bg="white").place(x=120, y=200)
 	entrada_senha = Entry(tela_login, width=40, bg="white", show="*")
 	entrada_senha.place(x=120, y=220)
-	bt_logar = Button(tela_login, width=10, bg="white", text="Login", command=partial(validar_login, tela_login, entrada_login)).place(x=285, y=250)
+	bt_logar = Button(tela_login, width=10, bg="white", text="Login", command=partial(validar_login, tela_login, entrada_login, entrada_senha)).place(x=285, y=250)
 	tela_login.mainloop()
 
 	
@@ -308,7 +339,14 @@ def chamar_tela_inicial(tela_anterior):
 	tela_inicial["bg"]="white"
 	tela_inicial.resizable(0,0)
 	lb_inicial = Label (tela_inicial, text="Sistema de Controle de Frequência", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50) #criando rótulo
+
 	bt_cadastrar = Button (tela_inicial, width=20, text="Cadastrar", command = partial(chamar_tela_cadastro, tela_inicial), bg="white").pack(pady=3) #criando botao "cadastrar"
-	bt_consultar = Button (tela_inicial, width=20, text="Consultar", command = partial(chamar_tela_consulta, tela_inicial), bg="white").pack(pady=3) #criando botao "Consultar" 	
+
+	if SCF_backend.user.funcao in ['ADM', 'Coordenador Geral']:
+		bt_consultar = Button (tela_inicial, width=20, text="Consultar", command = partial(chamar_tela_consulta, tela_inicial), bg="white").pack(pady=3) #criando botao "Consultar" 
+	else:
+		bt_consultar = Button (tela_inicial, width=20, text="Consultar", command = partial(chamar_tela_consulta_2, tela_inicial, SCF_backend.user.lab), bg="white").pack(pady=3)
+
 	bt_hist = Button (tela_inicial, width=20, text="Histórico", bg="white").pack(pady=3) #criando botao "Histórico"
+	bt_sair = Button (tela_inicial, width=10, text="Sair", bg="white", command=partial(deslogar, tela_inicial)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	tela_anterior.destroy()

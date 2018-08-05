@@ -12,11 +12,9 @@ def chamar_tela_cadastro(tela_anterior):
 
 	lb = Label (tela_cadastro, text="O que você deseja cadastrar?", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
 
-	if SCF_backend.user.funcao in ['ADM', 'Coordenador Geral']:
-		bt_cadastrar_colaborador = Button (tela_cadastro, width=20, text="Colaborador", bg="white", command=partial(chamar_tela_cadastro_colaborador, tela_cadastro)).pack(pady=3)
-		bt_cadastrar_laboratorio = Button (tela_cadastro, width=20, text="Laboratório", bg="white", command=partial(chamar_tela_cadastro_laboratorio,tela_cadastro)).pack(pady=3)
-	else:
-		bt_cadastrar_colaborador = Button (tela_cadastro, width=20, text="Colaborador", bg="white", command=partial(chamar_tela_cadastro_colaborador, tela_cadastro)).pack(pady=3)
+	bt_cadastrar_colaborador = Button (tela_cadastro, width=20, text="Colaborador", bg="white", command=partial(chamar_tela_cadastro_colaborador, tela_cadastro)).pack(pady=3)
+	bt_cadastrar_laboratorio = Button (tela_cadastro, width=20, text="Laboratório", bg="white", command=partial(chamar_tela_cadastro_laboratorio,tela_cadastro)).pack(pady=3)
+		
 	bt_voltar = Button (tela_cadastro, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_cadastro)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	tela_anterior.destroy()
 
@@ -48,6 +46,7 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 
 	if SCF_backend.user.funcao in ['ADM', 'Coordenador Geral']:	
 		lista_lab = retorna_lista_lab()
+		lista_lab.remove("Administração")
 		lista_lab.insert(0, "*Selecione o laboratório*")
 		lista_func = ['Pesquisador', 'Gestor', 'Coordenador', 'ADM', 'Coordenador Geral']
 
@@ -112,7 +111,11 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 	bt_ok = Button(tela_cadastro_colaborador, width=10, text="Cadastrar", bg="white", command=partial(cadastrar_colaborador, tela_cadastro_colaborador, entrada_nome, entrada_dt_nasc,
 																									  entrada_lab, entrada_func, entrada_CH, entrada_dt_ing, entrada_status, entrada_cpf,
 																									  entrada_senha, entrada_confirma_senha, entrada_foto)).place(x=275, y=625)
-	bt_voltar = Button(tela_cadastro_colaborador, width=10, text="Voltar", bg="white", command=partial(chamar_tela_cadastro, tela_cadastro_colaborador)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
+	if SCF_backend.user.funcao in ['ADM', 'Coordenador Geral']:
+		bt_voltar = Button(tela_cadastro_colaborador, width=10, text="Voltar", bg="white", command=partial(chamar_tela_cadastro, tela_cadastro_colaborador)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
+	else:
+		bt_voltar = Button(tela_cadastro_colaborador, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_cadastro_colaborador)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
+		
 	
 
 def chamar_tela_cadastro_laboratorio(tela_anterior):
@@ -153,7 +156,7 @@ def chamar_tela_cadastro_laboratorio(tela_anterior):
 def pop_up(title, label):
 	pop_up = Tk()
 	pop_up["bg"]="white"
-	pop_up.geometry("250x60+450+330")
+	pop_up.geometry("280x60+450+330")
 	pop_up.title(title) 
 	pop_up.resizable(0,0)
 	lb = Label (pop_up, text=label, bg="white").pack(pady=20)
@@ -340,11 +343,11 @@ def chamar_tela_inicial(tela_anterior):
 	tela_inicial.resizable(0,0)
 	lb_inicial = Label (tela_inicial, text="Sistema de Controle de Frequência", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50) #criando rótulo
 
-	bt_cadastrar = Button (tela_inicial, width=20, text="Cadastrar", command = partial(chamar_tela_cadastro, tela_inicial), bg="white").pack(pady=3) #criando botao "cadastrar"
-
 	if SCF_backend.user.funcao in ['ADM', 'Coordenador Geral']:
+		bt_cadastrar = Button (tela_inicial, width=20, text="Cadastrar", command = partial(chamar_tela_cadastro, tela_inicial), bg="white").pack(pady=3) #criando botao "cadastrar"
 		bt_consultar = Button (tela_inicial, width=20, text="Consultar", command = partial(chamar_tela_consulta, tela_inicial), bg="white").pack(pady=3) #criando botao "Consultar" 
 	else:
+		bt_cadastrar = Button (tela_inicial, width=20, text="Cadastrar colaborador", command = partial(chamar_tela_cadastro_colaborador, tela_inicial), bg="white").pack(pady=3) #criando botao "cadastrar"
 		bt_consultar = Button (tela_inicial, width=20, text="Consultar", command = partial(chamar_tela_consulta_2, tela_inicial, SCF_backend.user.lab), bg="white").pack(pady=3)
 
 	bt_hist = Button (tela_inicial, width=20, text="Histórico", bg="white").pack(pady=3) #criando botao "Histórico"

@@ -11,9 +11,6 @@ def criar_conexao():
 	global con
 	con = Conexao()
 
-# def criar_user():
-# 	global user
-# 	user = None
 
 class Conexao():
 	def __init__(self):
@@ -22,6 +19,8 @@ class Conexao():
 		self.cursor = self.conexao.cursor()
 		self.cursor.execute("CREATE TABLE IF NOT EXISTS Laboratorio (Nome VARCHAR(45), Sigla VARCHAR(45), Logo BLOB, Image_type VARCHAR(3), PRIMARY KEY(Nome, Sigla))")
 		self.cursor.execute("CREATE TABLE IF NOT EXISTS Colaborador (Nome VARCHAR(45), DtNasc DATE, Lab VARCHAR(45), Funcao VARCHAR(45), CH INT, DtIngresso DATE, DtDesligamento DATE, Status VARCHAR(45), cpf VARCHAR(11), Foto BLOB, Image_type VARCHAR(3), Senha VARCHAR(45) NOT NULL, PRIMARY KEY(cpf))")
+		self.cursor.execute("INSERT OR IGNORE INTO Laboratorio(Nome, Sigla) VALUES(?,?)", ("Administração", "ADM"))
+		self.conexao.commit()
 
 
 def cadastrar_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH, DtIngresso, status, cpf, senha, confirma_senha, foto):
@@ -32,20 +31,32 @@ def cadastrar_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH, DtIngres
 		conexao = con.conexao
 
 		try:
-			if Lab.get() != "*Selecione o laboratório*":
+			if (Lab.get() != "*Selecione o laboratório*") or (Funcao.get() in ['ADM', 'Coordenador Geral']):
+
+				lab = ""
+				if(Funcao.get() in ['ADM', 'Coordenador Geral']):
+					lab = "Administração"
+				else:
+					lab = Lab.get()
+
 				if foto.get() != "":
 					file_type = ImageMethods.get_file_type(foto.get())
 					file_binary = ImageMethods.get_binary(foto.get())
-					cursor.execute("INSERT INTO Colaborador (Nome, DtNasc, Lab, Funcao, CH, DtIngresso, Status, cpf, Foto, Image_type, Senha) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (nome.get(), DtNasc.get(), Lab.get(), Funcao.get(), CH.get(), DtIngresso.get(), status.get(), cpf.get(), file_binary, file_type, senha.get()))
+					cursor.execute("INSERT INTO Colaborador (Nome, DtNasc, Lab, Funcao, CH, DtIngresso, Status, cpf, Foto, Image_type, Senha) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (nome.get(), DtNasc.get(), lab, Funcao.get(), CH.get(), DtIngresso.get(), status.get(), cpf.get(), file_binary, file_type, senha.get()))
 				else:
-					cursor.execute("INSERT INTO Colaborador (Nome, DtNasc, Lab, Funcao, CH, DtIngresso, Status, cpf, Foto, Image_type, Senha) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (nome.get(), DtNasc.get(), Lab.get(), Funcao.get(), CH.get(), DtIngresso.get(), status.get(), cpf.get(), None, None, senha.get()))
+					cursor.execute("INSERT INTO Colaborador (Nome, DtNasc, Lab, Funcao, CH, DtIngresso, Status, cpf, Foto, Image_type, Senha) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (nome.get(), DtNasc.get(), lab, Funcao.get(), CH.get(), DtIngresso.get(), status.get(), cpf.get(), None, None, senha.get()))
 			else:
 				inter.pop_up("ERROR", "Cadastro Inválido!")
 				return False
 
+			if(Funcao.get() in ['ADM', 'Coordenador Geral']):
+				inter.pop_up("Atenção", "Usuário cadastrado no laboratório \"Administração\"")
+			else:
+				pass
 			inter.pop_up("SUCCESSFUL", "Cadastro Realizado com Sucesso")
 			inter.chamar_tela_cadastro_colaborador(tela_anterior)
 		except Exception as e:
+			print(e)
 			inter.pop_up("ERROR", "Cadastro Inválido")
 		conexao.commit()
 
@@ -158,6 +169,7 @@ class ImageMethods():
 		return  (file_type)
 
 def validar_login(tela_anterior, login, senha):
+	
 	if (login.get() != "") and (senha.get() != ""):
 		try:
 			colab = retorna_user(login.get())

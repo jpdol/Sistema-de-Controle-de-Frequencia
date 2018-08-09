@@ -152,6 +152,50 @@ def chamar_tela_cadastro_laboratorio(tela_anterior):
 	bt_voltar = Button (tela_cadastro_laboratorio, width=10, text="Voltar", bg="white", command=partial(chamar_tela_cadastro, tela_cadastro_laboratorio)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	bt_ok = Button(tela_cadastro_laboratorio, width=10, text="Cadastrar", bg="white", command=partial(cadastrar_laboratorio, tela_cadastro_laboratorio, entrada_nome, entrada_sigla, entrada_logo)).place(x=275, y=250)
 
+def chamar_tela_dados_lab(tela_anterior, lab):
+	tela_anterior.destroy()
+
+	dados_lab = retorna_dados_lab(lab)
+
+	tela_dados_lab = Tk()
+	tela_dados_lab["bg"]="white"
+	tela_dados_lab.geometry("500x300+300+200")
+	tela_dados_lab.title("Dados laboratório: "+lab) 
+	tela_dados_lab.resizable(0,0)
+	lb = Label(tela_dados_lab, text="Dados do laboratório", fg="orange", bg="white", font=["Verdana", 16]).pack(pady=20)
+	
+	#Nome:
+	lb_nome = Label(tela_dados_lab, text="Nome:", bg="white").place(x=110, y=80)
+	entrada_nome = Entry(tela_dados_lab, width=40, bg="white")
+	entrada_nome.insert(0,dados_lab[0])
+	entrada_nome.configure(state='readonly')
+	entrada_nome.place(x=110, y=100)
+
+	#Sigla:
+	lb_sigla = Label(tela_dados_lab, text="Sigla:", bg="white").place(x=110, y=130)
+	entrada_sigla = Entry(tela_dados_lab, width=40, bg="white")
+	entrada_sigla.insert(0,dados_lab[1])
+	entrada_sigla.configure(state='readonly')
+	entrada_sigla.place(x=110, y=150)
+
+	#Upload logo
+		#Label e entry
+	lb_logo = Label(tela_dados_lab, text='Insira o logo do laboratório', bg='white').place(x=110, y=180)
+	line_path = StringVar()
+	entrada_logo = Entry(tela_dados_lab, width=40, bg='white', textvariable = line_path)
+	entrada_logo.place(x=110, y=200)
+		#button
+	bt_browser = Button(tela_dados_lab, text='Browser', font=['TkDefaultFont', 7], bg='white', command = partial(ImageMethods.get_path, line_path))
+	bt_browser.place(x=360, y=200)
+
+	label_info = Label(tela_dados_lab, text="*Campo não obrigatório!", font=['TkDefaultFont', 7], bg="white")
+	label_info.place(x=110, y=220)
+
+	bt_voltar = Button (tela_dados_lab, width=10, text="Voltar", bg="white", command=partial(chamar_tela_consulta_2, tela_dados_lab, lab)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
+	bt_remover = Button(tela_dados_lab, width=20, text="Excluir laboratório", bg="white", command=partial(excluir_lab, tela_dados_lab, dados_lab[0], dados_lab[1])).pack(side=RIGHT, anchor = SE, pady=0, padx=4)
+	bt_ok = Button(tela_dados_lab, width=10, text="Atualizar", bg="white", command=partial(atualizar_cadastro_laboratorio, tela_dados_lab, entrada_nome, entrada_sigla, entrada_logo)).place(x=275, y=240)
+
+
 	
 def pop_up(title, label):
 	pop_up = Tk()
@@ -160,6 +204,7 @@ def pop_up(title, label):
 	pop_up.title(title) 
 	pop_up.resizable(0,0)
 	lb = Label (pop_up, text=label, bg="white").pack(pady=20)
+
 
 def chamar_tela_consulta(tela_anterior):
 	tela_consulta = Tk()
@@ -190,7 +235,7 @@ def chamar_tela_consulta_2(tela_anterior, lab):
 	tela_consulta = Tk()
 	tela_consulta["bg"]="white"
 	tela_consulta.geometry("500x300+300+200")
-	tela_consulta.title("Consulta") 
+	tela_consulta.title("Consultar > Laboratório: "+lab) 
 	tela_consulta.resizable(0,0)
 	lb = Label (tela_consulta, text="Consultar", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
 
@@ -206,15 +251,17 @@ def chamar_tela_consulta_2(tela_anterior, lab):
 	entrada_colab['values'] = lista_colab
 	entrada_colab.current(0)		
 
-	bt_ok = Button(tela_consulta, width=10, text="Avançar", bg="white", command = partial(validar_consulta_2, tela_consulta, entrada_colab)).place(x=275, y=177)
+	bt_ok = Button(tela_consulta, width=10, text="Avançar", bg="white", command = partial(validar_consulta_2, tela_consulta, entrada_colab, lab)).place(x=275, y=177)
+	bt_consulta_lab = Button(tela_consulta, width=20, text="Consultar laboratório", bg="white", command=partial(chamar_tela_dados_lab, tela_consulta, lab)).pack(side=RIGHT, anchor = SE, pady=4, padx=4)
+
 	if SCF_backend.user.funcao in ['ADM', 'Coordenador Geral']:
 		bt_voltar = Button (tela_consulta, width=10, text="Voltar", bg="white", command=partial(chamar_tela_consulta, tela_consulta)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	else:
 		bt_voltar = Button (tela_consulta, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_consulta)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	tela_anterior.destroy()
 
-def chamar_tela_dados_colaborador(tela_anterior, nome_colab):
-	colab = retorna_colab(nome_colab)
+def chamar_tela_dados_colaborador(tela_anterior, nome_colab, lab):
+	colab = retorna_colab(nome_colab, lab)
 	tela_anterior.destroy()
 	tela_cadastro_colaborador = Tk()
 	tela_cadastro_colaborador["bg"] = "white"

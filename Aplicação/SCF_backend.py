@@ -81,6 +81,27 @@ def atualizar_cadastro_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH,
 			inter.pop_up("ERROR", "Cadastro Inválido")
 		conexao.commit()
 
+def atualizar_cadastro_laboratorio(tela_anterior, nome, sigla, logo_path):
+	if logo_path.get() != "":
+		cursor = con.cursor
+		conexao = con.conexao
+		try:
+			file_type = ImageMethods.get_file_type(logo_path.get())
+			file_binary = ImageMethods.get_binary(logo_path.get())
+			cursor.execute('''UPDATE Laboratorio 
+					SET Logo = (?), Image_type = (?) WHERE Nome = (?) and Sigla = (?)''', (file_binary, file_type, nome.get(), sigla.get()))
+			conexao.commit()
+
+			inter.pop_up("Sucesso", "Dados Atualizados")
+
+			inter.chamar_tela_consulta_2(tela_anterior, nome.get())
+
+		except Exception as e:
+			inter.pop_up("ERROR", "O caminho informado é inválido")
+	else:
+		return False
+
+
 def cadastrar_laboratorio(tela_anterior, nome, sigla, logo):
 	cursor = con.cursor
 	conexao = con.conexao
@@ -116,6 +137,14 @@ def retorna_lista_colab(lab):
 		lista.append(str(nome[0]))
 	return lista
 
+def retorna_dados_lab(lab):
+	cursor = con.cursor
+	try:	
+		cursor.execute("SELECT Nome,Sigla FROM Laboratorio WHERE Nome='%s'"%(lab))
+		return cursor.fetchall()[0]
+	except:
+		pop_up("ERROR", "Laboratorio não encontrado!")
+
 class Colaborador():
 	def __init__(self, nome, dtNasc, lab, funcao, ch, dtIngresso, status, cpf, senha):
 		self.nome = nome
@@ -128,9 +157,9 @@ class Colaborador():
 		self.cpf = cpf
 		self.senha = senha
 
-def retorna_colab(nome):
+def retorna_colab(nome, lab):
 	cursor = con.cursor
-	cursor.execute("SELECT * FROM Colaborador WHERE Nome = '%s'"%nome.get())
+	cursor.execute("SELECT * FROM Colaborador WHERE Nome = '%s' and Lab='%s'"%(nome.get(), lab))
 	lista = cursor.fetchall()
 	tupla = lista[0]
 	colab = Colaborador(tupla[0], tupla[1], tupla[2], tupla[3], tupla[4], tupla[5], tupla[7], tupla[8], tupla[11])
@@ -191,21 +220,37 @@ def atualizar_user(colab):
 	global user
 	user = colab
 
-def deletar_colab_bd(cpf):
-	try:
-		cursor = con.cursor
-		cursor.execute("DELETE FROM Colaborador WHERE cpf= '%s';"%cpf)
-		con.conexao.commit()
-	except:
-		inter.pop_up("ERROR", "Não foi possível remover o colaborador.")
 
 def excluir_colaborador(tela_anterior, cpf, lab):
 	
 	if user.cpf != cpf:
-		deletar_colab_bd(cpf)
-		inter.chamar_tela_consulta_2(tela_anterior, lab)
+
+		try:
+			cursor = con.cursor
+			cursor.execute("DELETE FROM Colaborador WHERE cpf= '%s';"%cpf)
+			con.conexao.commit()
+			inter.chamar_tela_consulta_2(tela_anterior, lab)
+		except:
+			inter.pop_up("ERROR", "Não foi possível remover o colaborador.")
+		
 	else:
 		inter.pop_up("ERROR", "Não é permitido excluir o próprio usuário.")
+
+
+def excluir_lab(tela_anterior, nome, sigla):
+	lista_colab = retorna_lista_colab(nome)
+	if len(lista_colab) == 0:
+		try:
+			cursor = con.cursor
+			cursor.execute("DELETE FROM Laboratorio WHERE Nome = '%s'"%nome)
+			con.conexao.commit()
+			inter.pop_up("Sucesso", "Laboratório excluido com sucesso")
+			inter.chamar_tela_consulta(tela_anterior)
+		except:
+			inter.pop_up("ERROR", "Não foi possível deletar o laboratório")
+	else:
+		inter.pop_up("Error", "O laboratório deve estar vazio para ser excluido")
+		return False
 	
 
 def deslogar(tela_anterior):
@@ -218,12 +263,12 @@ def validar_consulta(tela_anterior, lab):
 	if lab.get() != "" and lab.get() != "*Selecione o laboratório*":
 		inter.chamar_tela_consulta_2(tela_anterior, lab.get())
 	else:
-		inter.pop_up("ERROR", "Consulta Inválida")
+		inter.pop_up("ERROR", "Consulta Inválida1")
 
-def validar_consulta_2(tela_anterior, nome_colab):
+def validar_consulta_2(tela_anterior, nome_colab, lab):
 	try:
-		colab = retorna_colab(nome_colab)
-		inter.chamar_tela_dados_colaborador(tela_anterior, nome_colab)
+		colab = retorna_colab(nome_colab, lab)
+		inter.chamar_tela_dados_colaborador(tela_anterior, nome_colab, lab)
 	except Exception as e:
 		print(e)
 		inter.pop_up("ERROR", "Consulta Inválida")

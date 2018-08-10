@@ -2,7 +2,7 @@ import serial
 from tkinter import *
 import sqlite3 
 from functools import partial
-
+from datetime import datetime
 
 
 
@@ -49,6 +49,35 @@ class Colaborador():
 		self.status = status
 		self.cpf = cpf
 		self.senha = senha
+
+def retorna_datetime():
+	now = datetime.now()
+	
+	dia = str(now.day)
+	if len(dia)<2:
+		dia = '0'+dia
+	
+	mes = str(now.month)
+	if len(mes)<2:
+		mes = '0'+mes
+	
+	ano = str(now.year)
+	
+	hora = str(now.hour)
+	if len(hora)<2:
+		hora = '0'+hora
+	
+	minutos = str(now.minute)
+	if len(minutos)<2:
+		minutos = '0'+minutos
+	
+	segundos = str(now.second)
+	if len(segundos)<2:
+		mes = '0'+segundos
+	
+	
+	data_hora = ano+'/'+mes+'/'+dia+' '+hora+':'+minutos+':'+segundos
+	return data_hora
 
 def retorna_user(cpf):
 	cursor = con.cursor
@@ -123,7 +152,20 @@ def pegar_digital(tela_anterior, cpf):
 	pre_tela_principal(tela_anterior)
 
 
-
+def marcar_frequencia(idDigital):
+	cursor = con.cursor
+	cursor.execute("SELECT cpf FROM Digital WHERE idDigital='%d'"%idDigital)
+	cpf = str(cursor.fetchall()[0][0])
+	cursor.execute("SELECT count(cpf) FROM Frequencia  WHERE cpf='%s' and saida IS NULL"%cpf)
+	num = cursor.fetchall()[0][0]
+	if num==1:
+		cursor.execute('''UPDATE Frequencia 
+					SET saida=(?) WHERE cpf=(?) AND saida is null''', (retorna_datetime(), cpf))
+	elif num==0:
+		cursor.execute("INSERT INTO Frequencia VALUES (?, ?, ?)", (cpf, retorna_datetime(), None))
+	con.conexao.commit()
+		
+	
 
 def validar_digital(tela_anterior):
 	conexao.reset_input_buffer()
@@ -131,6 +173,7 @@ def validar_digital(tela_anterior):
 	while(confianca<90):
 		idDigital = int(conexao.readline())
 		confianca = int(conexao.readline())
+	marcar_frequencia(idDigital)
 	chamar_perfil(idDigital)
 
 
@@ -247,9 +290,4 @@ def pop_up(title, label):
 if linha == b'1\r\n':
 	chamar_tela_principal()
 	conexao.close()
-	
-
-
-
-
 	

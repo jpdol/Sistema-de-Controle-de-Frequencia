@@ -3,6 +3,8 @@ from tkinter import *
 import sqlite3 
 from functools import partial
 from datetime import datetime
+from PIL import Image, ImageTk
+import io
 
 
 
@@ -39,7 +41,7 @@ conexao = serial.Serial(porta, velocidade)
 linha = conexao.readline()
 
 class Colaborador():
-	def __init__(self, nome, dtNasc, lab, funcao, ch, dtIngresso, status, cpf, senha):
+	def __init__(self, nome, dtNasc, lab, funcao, ch, dtIngresso, status, cpf, senha, foto):
 		self.nome = nome
 		self.dtNasc = dtNasc
 		self.lab = lab
@@ -49,6 +51,7 @@ class Colaborador():
 		self.status = status
 		self.cpf = cpf
 		self.senha = senha
+		self.foto = foto
 
 def retorna_datetime():
 	now = datetime.now()
@@ -84,7 +87,7 @@ def retorna_user(cpf):
 	cursor.execute("SELECT * FROM Colaborador WHERE cpf = '%s'"%cpf)
 	lista = cursor.fetchall()
 	tupla = lista[0]
-	colab = Colaborador(tupla[0], tupla[1], tupla[2], tupla[3], tupla[4], tupla[5], tupla[7], tupla[8], tupla[11])
+	colab = Colaborador(tupla[0], tupla[1], tupla[2], tupla[3], tupla[4], tupla[5], tupla[7], tupla[8], tupla[11], tupla[9])
 	return colab
 
 def retorna_lista_cadastrados():
@@ -173,18 +176,54 @@ def validar_digital(tela_anterior):
 	while(confianca<90):
 		idDigital = int(conexao.readline())
 		confianca = int(conexao.readline())
-	marcar_frequencia(idDigital)
-	chamar_perfil(idDigital)
-
-
-def chamar_perfil(idDigital):
 	try:
 		cursor = con.cursor
 		cursor.execute("SELECT cpf FROM Digital WHERE idDigital='%d'"%idDigital)
 		cpf = str(cursor.fetchall()[0][0])
+
+		marcar_frequencia(idDigital)
+		chamar_perfil(cpf, tela_anterior)
+
+	except Exception as e:
+		return False
+
+
+
+def chamar_perfil(cpf, tela_anterior):
+	try:
+		tela_anterior.destroy()
 		colab = retorna_user(cpf)
+
+		tela_perfil = Tk()
+		tela_perfil.geometry("500x350")
+		tela_perfil["bg"] = "white"
+		tela_perfil.title("Perfil do colaborador")
+		tela_perfil.resizable(0,0)
+
+		maxwidth = 150
+		maxheight = 200
+
+		label_title = Label(tela_perfil, bg="white", text="Entrada liberada", fg= "orange", font=["Verdana", 30]).grid(row=0, column=0, columnspan=2, padx=80)
+
+		labe_fake_1 = Label(tela_perfil, text="     ", bg="white").grid(row=1)
+
+		if colab.foto != None:
+			pic = Image.open(io.BytesIO(colab.foto),  mode='r')
+
+			pic.thumbnail((maxwidth, maxheight), resample=3)
+
+			pic = ImageTk.PhotoImage(pic)
+
+			label_foto = Label(tela_perfil, image = pic, width=maxwidth, height=maxheight, bg="white").grid(padx=10, row=2, rowspan=3)
+		else:
+			label_foto = Label(tela_perfil, width=maxwidth, height=maxheight, bg="white").grid(padx=10, row=2, rowspan=3)
+
+		label_nome = Label(tela_perfil, bg="white", text="Nome: "+colab.nome,   font=["Verdana", 13]).grid(row=2, column=1, sticky=W)
+		label_lab = Label(tela_perfil, bg="white", text="Laboratório: "+colab.lab,     font=["Verdana", 13]).grid(row=3,column=1, sticky=W)
+		label_func = Label(tela_perfil, bg="white", text="Função: "+colab.funcao, font=["Verdana", 13]).grid(row=4,column=1, sticky=W)
+
 		
-	except:
+	except Exception as e:
 		return False
 
 

@@ -227,8 +227,19 @@ def excluir_colaborador(tela_anterior, cpf, lab):
 
 		try:
 			cursor = con.cursor
+
+			cursor.execute("SELECT idDigital FROM Digital WHERE cpf='%s'"%cpf)
+
+			idDigital = cursor.fetchall()[0][0]
+
+			cursor.execute("DELETE FROM Digital WHERE cpf= '%s';"%cpf)
+
 			cursor.execute("DELETE FROM Colaborador WHERE cpf= '%s';"%cpf)
+
+			cursor.execute('''UPDATE IdDisponivel SET disponivel = (?) WHERE idDigital = (?)''', (0, idDigital))
+
 			con.conexao.commit()
+			
 			inter.chamar_tela_consulta_2(tela_anterior, lab)
 		except:
 			inter.pop_up("ERROR", "Não foi possível remover o colaborador.")

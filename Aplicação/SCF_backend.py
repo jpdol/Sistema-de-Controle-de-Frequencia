@@ -26,6 +26,8 @@ class Conexao():
 def cadastrar_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH, DtIngresso, status, cpf, senha, confirma_senha, foto):
 	if senha.get() != confirma_senha.get():
 		inter.pop_up("ERROR", "Confirme sua Senha!")
+	elif(not(validar_cpf(cpf.get()))):
+		inter.pop_up("ERROR", "CPF inválido")
 	else:
 		cursor = con.cursor
 		conexao = con.conexao
@@ -196,6 +198,35 @@ class ImageMethods():
 		for i in range(-3,0):
 			file_type = file_type + image_path[i]
 		return  (file_type)
+
+def validar_cpf(cpf):
+	try:
+		if cpf.isnumeric() and (len(cpf) == 11):
+			igual = True
+			for i in range(1,11):
+				if cpf[i] != cpf[i-1]:	
+					igual = False
+			if (igual):
+				return False
+
+			cpf_soma = 0
+
+			for i in range(0, 9):
+				cpf_soma = cpf_soma + int(cpf[i])*(10-i)
+
+			if ((cpf_soma*10)%11 == int(cpf[9])) or ((cpf_soma*10)%11 == 10 and int(cpf[9]) == 0):
+				cpf_soma = 0
+				for i in range(0, 10):
+					cpf_soma = cpf_soma + int(cpf[i])*(11-i)
+
+				if ((cpf_soma*10)%11 == int(cpf[10])) or ((cpf_soma*10)%11 == 10 and int(cpf[10]) == 0):
+					return True
+				
+			else:
+				return False
+		return False
+	except:
+		return False
 
 def validar_login(tela_anterior, login, senha):
 	

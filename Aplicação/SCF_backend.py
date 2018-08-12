@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter.filedialog import askopenfilename
+import datetime
 import SCF_interface as inter
 import sqlite3
 
@@ -28,6 +29,8 @@ def cadastrar_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH, DtIngres
 		inter.pop_up("ERROR", "Confirme sua Senha!")
 	elif(not(validar_cpf(cpf.get()))):
 		inter.pop_up("ERROR", "CPF inválido")
+	elif(not(validar_data(DtNasc.get())) or not(validar_data(DtIngresso.get()))):
+		inter.pop_up("ERROR", "Data inválida")
 	else:
 		cursor = con.cursor
 		conexao = con.conexao
@@ -228,6 +231,14 @@ def validar_cpf(cpf):
 	except:
 		return False
 
+def validar_data(data):
+	try:
+		datetime.datetime.strptime(data, '%d/%m/%Y')
+		return True
+	except Exception as e:
+		print(e)
+		return False
+
 def validar_login(tela_anterior, login, senha, event=None):
 	
 	if (login.get() != "") and (senha.get() != ""):
@@ -261,16 +272,26 @@ def excluir_colaborador(tela_anterior, cpf, lab):
 
 			cursor.execute("SELECT idDigital FROM Digital WHERE cpf='%s'"%cpf)
 
-			idDigital = cursor.fetchall()[0][0]
+			idDigital = cursor.fetchone()
 
-			cursor.execute("DELETE FROM Digital WHERE cpf= '%s';"%cpf)
+			if idDigital != None:
+				idDigital = idDigital[0]
 
-			cursor.execute("DELETE FROM Colaborador WHERE cpf= '%s';"%cpf)
+				cursor.execute("DELETE FROM Digital WHERE cpf= '%s'"%cpf)
 
-			cursor.execute('''UPDATE IdDisponivel SET disponivel = (?) WHERE idDigital = (?)''', (0, idDigital))
+				cursor.execute("DELETE FROM Colaborador WHERE cpf= '%s'"%cpf)
 
-			con.conexao.commit()
-			
+				try:
+					cursor.execute('''UPDATE IdDisponivel SET disponivel = (?) WHERE idDigital = (?)''', (0, idDigital))
+				except:
+					pass
+
+				con.conexao.commit()
+
+			else:
+				cursor.execute("DELETE FROM Colaborador WHERE cpf= '%s'"%cpf)
+				con.conexao.commit()
+
 			inter.chamar_tela_consulta_2(tela_anterior, lab)
 		except:
 			inter.pop_up("ERROR", "Não foi possível remover o colaborador.")

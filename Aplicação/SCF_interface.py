@@ -38,8 +38,19 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 	#Data de Nascimento
 	lb_dt_nasc = Label(tela_cadastro_colaborador, text="Data de Nascimento:", bg="white")
 	lb_dt_nasc.place(x=dis_x, y=dis_y_inicial+50)
-	entrada_dt_nasc = Entry(tela_cadastro_colaborador, width=40, bg="white")
+
+	dt_format_nasc = StringVar()
+	dt_format_nasc.set("Formato: DD/MM/AAAA")
+
+	dt_format_entrada = StringVar()
+	dt_format_entrada.set("Formato: DD/MM/AAAA")
+
+	placeholder = lambda texto, event: texto.set("")
+
+	entrada_dt_nasc = Entry(tela_cadastro_colaborador, width=40, bg="white", textvariable=dt_format_nasc)
+	entrada_dt_nasc.bind('<Button-1>', lambda event:placeholder(dt_format_nasc,event))
 	entrada_dt_nasc.place(x=dis_x, y=dis_y_inicial+70)
+
 	#Laboratório
 	lb_lab = Label(tela_cadastro_colaborador, text="Laboratório:", bg="white")
 	lb_lab.place(x=dis_x, y=dis_y_inicial+100)
@@ -72,7 +83,8 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 	#Data de Ingresso
 	lb_dt_ing = Label(tela_cadastro_colaborador, text="Data de Ingresso:", bg="white")
 	lb_dt_ing.place(x=dis_x, y=dis_y_inicial+250)
-	entrada_dt_ing = Entry(tela_cadastro_colaborador, width=40, bg="white")
+	entrada_dt_ing = Entry(tela_cadastro_colaborador, width=40, bg="white", textvariable=dt_format_entrada)
+	entrada_dt_ing.bind('<Button-1>', lambda event:placeholder(dt_format_entrada,event))
 	entrada_dt_ing.place(x=dis_x, y=dis_y_inicial+270)
 	#Status
 	lb_status = Label(tela_cadastro_colaborador, text="Status:", bg="white")

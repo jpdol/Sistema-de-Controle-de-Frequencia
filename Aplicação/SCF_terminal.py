@@ -5,7 +5,7 @@ from functools import partial
 from datetime import datetime
 from PIL import Image, ImageTk
 import io
-
+import time
 
 
 
@@ -173,19 +173,30 @@ def marcar_frequencia(idDigital):
 def validar_digital(tela_anterior):
 	conexao.reset_input_buffer()
 	confianca = 0
-	while(confianca<90):
+	tempo_inicial = time.time()
+	tempo_atual = time.time()
+	detectou = False
+	while(confianca<90 and (tempo_atual-tempo_inicial)<10):
+		tempo_atual = time.time()
 		idDigital = int(conexao.readline())
 		confianca = int(conexao.readline())
-	try:
-		cursor = con.cursor
-		cursor.execute("SELECT cpf FROM Digital WHERE idDigital='%d'"%idDigital)
-		cpf = str(cursor.fetchall()[0][0])
 
-		marcar_frequencia(idDigital)
-		chamar_perfil(cpf, tela_anterior)
+	if tempo_atual-tempo_inicial < 10:
+		detectou = True
 
-	except Exception as e:
-		return False
+
+	if detectou:
+		try:
+			cursor = con.cursor
+			cursor.execute("SELECT cpf FROM Digital WHERE idDigital='%d'"%idDigital)
+			cpf = str(cursor.fetchall()[0][0])
+
+			marcar_frequencia(idDigital)	
+			chamar_perfil(cpf, tela_anterior)
+
+		except Exception as e:
+			return False
+
 
 
 

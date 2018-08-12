@@ -228,7 +228,7 @@ def validar_cpf(cpf):
 	except:
 		return False
 
-def validar_login(tela_anterior, login, senha):
+def validar_login(tela_anterior, login, senha, event=None):
 	
 	if (login.get() != "") and (senha.get() != ""):
 		try:

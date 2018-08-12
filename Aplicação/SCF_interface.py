@@ -378,7 +378,11 @@ def chamar_tela_login():
 	lb_senha = Label(tela_login, text="Senha:", bg="white").place(x=120, y=200)
 	entrada_senha = Entry(tela_login, width=40, bg="white", show="*")
 	entrada_senha.place(x=120, y=220)
+
+	enter_logar = lambda event:validar_login(event=event, tela_anterior=tela_login, login=entrada_login, senha=entrada_senha)
+
 	bt_logar = Button(tela_login, width=10, bg="white", text="Login", command=partial(validar_login, tela_login, entrada_login, entrada_senha)).place(x=285, y=250)
+	tela_login.bind('<Return>', enter_logar)
 	tela_login.mainloop()
 
 	

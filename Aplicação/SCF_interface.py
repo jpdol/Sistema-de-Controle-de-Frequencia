@@ -40,10 +40,10 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 	lb_dt_nasc.place(x=dis_x, y=dis_y_inicial+50)
 
 	dt_format_nasc = StringVar()
-	dt_format_nasc.set("Formato: DD/MM/AAAA")
+	dt_format_nasc.set("DD/MM/AAAA")
 
 	dt_format_entrada = StringVar()
-	dt_format_entrada.set("Formato: DD/MM/AAAA")
+	dt_format_entrada.set("DD/MM/AAAA")
 
 	placeholder = lambda texto, event: texto.set("")
 
@@ -383,7 +383,7 @@ def chamar_tela_login():
 	lb_image = Label(tela_login, image = imagem, bg="white")
 	lb_image.image = imagem
 	lb_image.pack(pady=30)
-	lb_login = Label(tela_login, text="Login:", bg="white").place(x=120, y=150)
+	lb_login = Label(tela_login, text="CPF:", bg="white").place(x=120, y=150)
 	entrada_login = Entry(tela_login, width=40, bg="white")
 	entrada_login.place(x=120, y=170)
 	

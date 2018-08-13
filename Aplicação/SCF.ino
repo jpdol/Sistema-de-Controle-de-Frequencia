@@ -6,7 +6,7 @@ Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 uint8_t id;
 int green = 8;
 int red = 9;
-
+   
 void setup()  
 {
   Serial.begin(9600);
@@ -206,8 +206,6 @@ uint8_t getFingerprintEnroll() {
 }
 
 
-
-
 void loop()                     // run over and over again
 {
   char entrada;
@@ -297,7 +295,10 @@ int getFingerprintIDez() {
   if (p != FINGERPRINT_OK)  return -1;
 
   p = finger.fingerFastSearch();
-  if (p != FINGERPRINT_OK)  return -1;
+  if (p != FINGERPRINT_OK){
+    Serial.println("Invalido");
+    return -1;
+  }
   
   // found a match!
   //Serial.print("Found ID #"); 

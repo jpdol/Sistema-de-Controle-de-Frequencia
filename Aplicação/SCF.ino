@@ -1,8 +1,6 @@
 #include <Adafruit_Fingerprint.h>
-#include <SoftwareSerial.h>
 
-SoftwareSerial mySerial(2, 3);
-Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
+Adafruit_Fingerprint finger = Adafruit_Fingerprint(&Serial1);
 uint8_t id;
 int green = 8;
 int red = 9;

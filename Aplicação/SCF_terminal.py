@@ -6,8 +6,7 @@ from datetime import datetime
 from PIL import Image, ImageTk
 import io
 import time
-
-
+import os
 
 
 class Conexao():
@@ -113,7 +112,7 @@ def retorna_posicao():
 
 def pegar_digital(tela_anterior, cpf):
 	conexao.reset_input_buffer()
-	conexao.write(b'e')
+	conexao.write(b'e\r\n')
 	entrada = conexao.readline()
 	if (entrada==b'Pronto para receber\r\n'):
 		print(1)
@@ -178,8 +177,12 @@ def validar_digital(tela_anterior):
 	detectou = False
 	while(confianca<90 and (tempo_atual-tempo_inicial)<10):
 		tempo_atual = time.time()
-		idDigital = int(conexao.readline())
-		confianca = int(conexao.readline())
+		entrada = conexao.readline()
+		if(entrada == b"Invalido\r\n"):
+			continue
+		else:
+			idDigital = int(entrada)
+			confianca = int(conexao.readline())
 
 	if tempo_atual-tempo_inicial < 10:
 		detectou = True
@@ -190,53 +193,108 @@ def validar_digital(tela_anterior):
 			cursor = con.cursor
 			cursor.execute("SELECT cpf FROM Digital WHERE idDigital='%d'"%idDigital)
 			cpf = str(cursor.fetchall()[0][0])
+			tela_anterior.destroy()
+			marcar_frequencia(idDigital)
+			
+			cursor = con.cursor
+			cursor.execute("SELECT cpf FROM Digital WHERE idDigital='%d'"%idDigital)
+			cpf = str(cursor.fetchall()[0][0])
+			cursor.execute("SELECT count(cpf) FROM Frequencia  WHERE cpf='%s' and saida IS NULL"%cpf)
+			num = cursor.fetchall()[0][0]
 
-			marcar_frequencia(idDigital)	
-			chamar_perfil(cpf, tela_anterior)
+			if num==1:
+				chamar_perfil_saida(cpf)
+	
+			elif num==0:
+				chamar_perfil_entrada(cpf)
 
 		except Exception as e:
 			return False
 
 
 
+def chamar_perfil_entrada(cpf):
 
-def chamar_perfil(cpf, tela_anterior):
 	try:
-		tela_anterior.destroy()
 		colab = retorna_user(cpf)
 
 		tela_perfil = Tk()
-		tela_perfil.geometry("500x350")
+		tela_perfil.geometry("500x350+300+200")
 		tela_perfil["bg"] = "white"
 		tela_perfil.title("Perfil do colaborador")
-		tela_perfil.resizable(0,0)
+		#tela_perfil.overridedirect(1)
 
 		maxwidth = 150
 		maxheight = 200
-
+		
 		label_title = Label(tela_perfil, bg="white", text="Entrada liberada", fg= "orange", font=["Verdana", 30]).grid(row=0, column=0, columnspan=2, padx=80)
-
-		labe_fake_1 = Label(tela_perfil, text="     ", bg="white").grid(row=1)
+		labe_fake_1 = Label(tela_perfil, text="     ", bg="white").grid(row=1, columnspan=2, column=0)
 
 		if colab.foto != None:
-			pic = Image.open(io.BytesIO(colab.foto),  mode='r')
-
+			pic = Image.open(io.BytesIO(colab.foto))
 			pic.thumbnail((maxwidth, maxheight), resample=3)
+			pic.save('temp.png')
+			pic.close()
 
-			pic = ImageTk.PhotoImage(pic)
+			pic = ImageTk.PhotoImage(file="temp.png")
 
-			label_foto = Label(tela_perfil, image = pic, width=maxwidth, height=maxheight, bg="white").grid(padx=10, row=2, rowspan=3)
+			label_foto = Label(tela_perfil, width=150, height=150, image = pic, bg="orange")
+			label_foto.image =  pic
+			label_foto.grid(padx=10, row=2, rowspan=3)
 		else:
-			label_foto = Label(tela_perfil, width=maxwidth, height=maxheight, bg="white").grid(padx=10, row=2, rowspan=3)
+			label_foto = Label(tela_perfil, width=20, height=10, bg="orange").grid(padx=10, row=2, rowspan=3)
 
 		label_nome = Label(tela_perfil, bg="white", text="Nome: "+colab.nome,   font=["Verdana", 13]).grid(row=2, column=1, sticky=W)
 		label_lab = Label(tela_perfil, bg="white", text="Laboratório: "+colab.lab,     font=["Verdana", 13]).grid(row=3,column=1, sticky=W)
 		label_func = Label(tela_perfil, bg="white", text="Função: "+colab.funcao, font=["Verdana", 13]).grid(row=4,column=1, sticky=W)
+		bt_confirma = Button(tela_perfil, bg="white", text = "Confirmar", width = 15, command = partial(pre_tela_principal, tela_perfil)).place(x=200, y=260)
+		os.remove("temp.png")
 
 		
 	except Exception as e:
 		return False
 
+def chamar_perfil_saida(cpf):
+
+	try:
+		colab = retorna_user(cpf)
+
+		tela_perfil = Tk()
+		tela_perfil.geometry("500x350+300+200")
+		tela_perfil["bg"] = "white"
+		tela_perfil.title("Perfil do colaborador")
+		#tela_perfil.overridedirect(1)
+
+		maxwidth = 150
+		maxheight = 200
+		
+		label_title = Label(tela_perfil, bg="white", text="Saída Validada", fg= "orange", font=["Verdana", 30]).grid(row=0, column=0, columnspan=2, padx=80)
+		labe_fake_1 = Label(tela_perfil, text="     ", bg="white").grid(row=1, columnspan=2, column=0)
+
+		if colab.foto != None:
+			pic = Image.open(io.BytesIO(colab.foto))
+			pic.thumbnail((maxwidth, maxheight), resample=3)
+			pic.save('temp.png')
+			pic.close()
+
+			pic = ImageTk.PhotoImage(file="temp.png")
+
+			label_foto = Label(tela_perfil, width=150, height=150, image = pic, bg="orange")
+			label_foto.image =  pic
+			label_foto.grid(padx=10, row=2, rowspan=3)
+		else:
+			label_foto = Label(tela_perfil, width=20, height=10, bg="orange").grid(padx=10, row=2, rowspan=3)
+
+		label_nome = Label(tela_perfil, bg="white", text="Nome: "+colab.nome,   font=["Verdana", 13]).grid(row=2, column=1, sticky=W)
+		label_lab = Label(tela_perfil, bg="white", text="Laboratório: "+colab.lab,     font=["Verdana", 13]).grid(row=3,column=1, sticky=W)
+		label_func = Label(tela_perfil, bg="white", text="Função: "+colab.funcao, font=["Verdana", 13]).grid(row=4,column=1, sticky=W)
+		bt_confirma = Button(tela_perfil, bg="white", text = "Confirmar", width = 15, command = partial(pre_tela_principal, tela_perfil)).place(x=200, y=260)
+		os.remove("temp.png")
+
+		
+	except Exception as e:
+		return False
+	
 
 def cadastrar_digital(login, senha, tela_anterior):
 	if (login.get() != "") and (senha.get() != ""):
@@ -293,7 +351,7 @@ def chamar_tela_login(tela_anterior):
 	lb_image.image = imagem
 	lb_image.pack(pady=30)
 	
-	lb_login = Label(tela_login, text="Login:", bg="white").place(x=120, y=150)
+	lb_login = Label(tela_login, text="CPF:", bg="white").place(x=120, y=150)
 	entrada_login = Entry(tela_login, width=40, bg="white")
 	entrada_login.place(x=120, y=170)
 	
@@ -337,7 +395,7 @@ def pop_up(title, label):
 	lb = Label (pop_up, text=label, bg="white").pack(pady=20)
 	
 
+
 if linha == b'1\r\n':
 	chamar_tela_principal()
 	conexao.close()
-	

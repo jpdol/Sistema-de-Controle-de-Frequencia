@@ -11,7 +11,7 @@ Sistema para controle de entrada e saída de colaboradores da empresa HUB - Tecn
   - Framework Tkinter para programação de interfaces para Desktop
   - Banco de Dados SQLite
   - Sensor Biométrico dy50
-  - Arduino
+  - Arduino MEGA
 
 ### Desenvolvedores:
   

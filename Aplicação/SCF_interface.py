@@ -1,6 +1,8 @@
 from SCF_backend import *
 import SCF_backend
 from functools import partial
+import tkinter.font as tkFont
+import tkinter.ttk as ttk
 
 
 def chamar_tela_cadastro(tela_anterior):
@@ -393,23 +395,21 @@ def chamar_historico(tela_anterior):
 	tela_anterior.destroy()
 
 
+
 def chamar_historico_2(tela_anterior, lab):
 
-	tela_inicial = Tk() #criacao de uma janela - instancia de Tk
-	tela_inicial.geometry("500x300+300+200") #dimensoes da janela --> Largura x Altura + DistanciaDaMargemEsquerda + DistanciaDaMargemSuperior
-	tela_inicial.title("HUB - Tecnologia e Inovação") #título da janela
-	tela_inicial["bg"]="white"
-	tela_inicial.resizable(0,0)
-	lb_inicial = Label (tela_inicial, text="Histórico", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=5) #criando rótulo
-
-	lb_nome = Label(tela_inicial, text="Nome:", bg="white").place(x=50, y=70)
-	listbox = Listbox(tela_inicial, width=30)
-	listbox.pack(side=LEFT, anchor= N, pady=50, padx=50)
-	for item in retorna_lista_colab(lab.get()):
-		listbox.insert(END, item)
-
-
+	header = ['Nome', 'Horas']
+	lista = []
 	tela_anterior.destroy()
+
+	tela_hist = Tk()
+	tela_hist["bg"] = "white"
+	lb = Label (tela_hist, text="Histórico", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=20)
+	tela_hist.geometry("500x300+300+200")
+	tela_hist.resizable(0, 0)
+	tela_hist.wm_title("Histórico")
+	tela_hist = McListBox(header, lista)
+
 
 def chamar_tela_login():
 	tela_login = Tk()

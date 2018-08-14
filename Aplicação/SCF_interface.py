@@ -369,7 +369,47 @@ def chamar_tela_dados_colaborador(tela_anterior, nome_colab, lab):
 	bt_voltar = Button(tela_cadastro_colaborador, width=10, text="Voltar", bg="white", command=partial(chamar_tela_consulta_2, tela_cadastro_colaborador, colab.lab)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	
 
+def chamar_historico(tela_anterior):
+	tela_consulta = Tk()
+	tela_consulta["bg"]="white"
+	tela_consulta.geometry("500x300+300+200")
+	tela_consulta.title("Consulta")
+	tela_consulta.resizable(0,0) 
+	lb = Label (tela_consulta, text="Consultar", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
 
+	#lab
+	lb_lab = Label(tela_consulta, text="Laboratório:", bg="white")
+	lb_lab.place(x=110, y=130)
+	lista_lab = retorna_lista_lab()
+	lista_lab.insert(0,"*Selecione o laboratório*")
+
+	entrada_lab = ttk.Combobox(tela_consulta, width=37, state="readonly")
+	entrada_lab.place(x=110, y=150)	
+	entrada_lab['values'] = lista_lab
+	entrada_lab.current(0)
+
+	bt_ok = Button(tela_consulta, width=10, text="Avançar", bg="white", command=partial(chamar_historico_2, tela_consulta, entrada_lab)).place(x=275, y=177)
+	bt_voltar = Button (tela_consulta, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_consulta)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
+	tela_anterior.destroy()
+
+
+def chamar_historico_2(tela_anterior, lab):
+
+	tela_inicial = Tk() #criacao de uma janela - instancia de Tk
+	tela_inicial.geometry("500x300+300+200") #dimensoes da janela --> Largura x Altura + DistanciaDaMargemEsquerda + DistanciaDaMargemSuperior
+	tela_inicial.title("HUB - Tecnologia e Inovação") #título da janela
+	tela_inicial["bg"]="white"
+	tela_inicial.resizable(0,0)
+	lb_inicial = Label (tela_inicial, text="Histórico", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=5) #criando rótulo
+
+	lb_nome = Label(tela_inicial, text="Nome:", bg="white").place(x=50, y=70)
+	listbox = Listbox(tela_inicial, width=30)
+	listbox.pack(side=LEFT, anchor= N, pady=50, padx=50)
+	for item in retorna_lista_colab(lab.get()):
+		listbox.insert(END, item)
+
+
+	tela_anterior.destroy()
 
 def chamar_tela_login():
 	tela_login = Tk()
@@ -413,6 +453,8 @@ def chamar_tela_inicial(tela_anterior):
 		bt_cadastrar = Button (tela_inicial, width=20, text="Cadastrar colaborador", command = partial(chamar_tela_cadastro_colaborador, tela_inicial), bg="white").pack(pady=3) #criando botao "cadastrar"
 		bt_consultar = Button (tela_inicial, width=20, text="Consultar", command = partial(chamar_tela_consulta_2, tela_inicial, SCF_backend.user.lab), bg="white").pack(pady=3)
 
-	bt_hist = Button (tela_inicial, width=20, text="Histórico", bg="white").pack(pady=3) #criando botao "Histórico"
+	bt_hist = Button (tela_inicial, width=20, text="Histórico", bg="white", command = partial(chamar_historico, tela_inicial)).pack(pady=3) #criando botao "Histórico"
+	
+
 	bt_sair = Button (tela_inicial, width=10, text="Sair", bg="white", command=partial(deslogar, tela_inicial)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	tela_anterior.destroy()

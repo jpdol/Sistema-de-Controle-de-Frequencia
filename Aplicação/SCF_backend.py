@@ -27,7 +27,7 @@ class Conexao():
 		self.conexao.commit()
 
 
-def cadastrar_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH, DtIngresso, status, cpf, senha, confirma_senha, foto):
+def cadastrar_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH, DtIngresso, status, cpf, senha, confirma_senha, foto, event=None):
 	if senha.get() != confirma_senha.get():
 		inter.pop_up("ERROR", "Confirme sua Senha!")
 	elif(not(validar_cpf(cpf.get()))):
@@ -68,7 +68,7 @@ def cadastrar_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH, DtIngres
 			inter.pop_up("ERROR", "Cadastro Inválido")
 		conexao.commit()
 
-def atualizar_cadastro_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH, DtIngresso, status, senha, confirma_senha, foto, nome_colab, cpf_colab):
+def atualizar_cadastro_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH, DtIngresso, status, senha, confirma_senha, foto, nome_colab, cpf_colab, event=None):
 	if senha.get()!=confirma_senha.get():
 		inter.pop_up("ERROR", "Confirme sua Senha!")
 	else:
@@ -89,7 +89,7 @@ def atualizar_cadastro_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH,
 			inter.pop_up("ERROR", "Cadastro Inválido")
 		conexao.commit()
 
-def atualizar_cadastro_laboratorio(tela_anterior, nome, sigla, logo_path):
+def atualizar_cadastro_laboratorio(tela_anterior, nome, sigla, logo_path, event=None):
 	if logo_path.get() != "":
 		cursor = con.cursor
 		conexao = con.conexao
@@ -110,23 +110,25 @@ def atualizar_cadastro_laboratorio(tela_anterior, nome, sigla, logo_path):
 		return False
 
 
-def cadastrar_laboratorio(tela_anterior, nome, sigla, logo):
+def cadastrar_laboratorio(tela_anterior, nome, sigla, logo, event=None):
 	cursor = con.cursor
 	conexao = con.conexao
+	if nome.get() != "" and sigla.get()!="":
+		try:
+			if logo.get() != "":
+				file_type = ImageMethods.get_file_type(logo.get())
+				file_binary = ImageMethods.get_binary(logo.get())
+				cursor.execute("INSERT INTO Laboratorio VALUES (?, ?, ?, ?)", (nome.get(), sigla.get(), file_binary, file_type))
+			else:
+				cursor.execute("INSERT INTO Laboratorio VALUES (?, ?, ?, ?)", (nome.get(), sigla.get(), None, None))
 
-	try:
-		if logo.get() != "":
-			file_type = ImageMethods.get_file_type(logo.get())
-			file_binary = ImageMethods.get_binary(logo.get())
-			cursor.execute("INSERT INTO Laboratorio VALUES (?, ?, ?, ?)", (nome.get(), sigla.get(), file_binary, file_type))
-		else:
-			cursor.execute("INSERT INTO Laboratorio VALUES (?, ?, ?, ?)", (nome.get(), sigla.get(), None, None))
-
-		inter.pop_up("SUCCESSFUL", "Cadastro Realizado com Sucesso")
-		inter.chamar_tela_cadastro_laboratorio(tela_anterior)
-	except:
+			inter.pop_up("SUCCESSFUL", "Cadastro Realizado com Sucesso")
+			inter.chamar_tela_cadastro_laboratorio(tela_anterior)
+		except:
+			inter.pop_up("ERROR", "Cadastro Inválido")
+		conexao.commit()
+	else:
 		inter.pop_up("ERROR", "Cadastro Inválido")
-	conexao.commit()
 
 def retorna_lista_lab():
 	cursor = con.cursor
@@ -244,20 +246,20 @@ def validar_cpf(cpf):
 
 def validar_data(data):
 	try:
-		datetime.datetime.strptime(data, '%d/%m/%Y')
+		datetime.strptime(data, '%d/%m/%Y')
 		return True
 	except Exception as e:
 		print(e)
 		return False
 
 
-def validar_chamada_historico(tela_anterior, lab, mes, ano):
+def validar_chamada_historico(tela_anterior, lab, mes, ano, event=None):
 	laboratorio, mes, ano = lab.get(), mes.get(), ano.get()
 	if laboratorio != "*Selecione o laboratório*":
 		try:
 			cursor = con.cursor
 			dict_mes = {'Janeiro': '01','Fevereiro': '02','Março': '03','Abril': '04','Maio': '05','Junho': '06',
-						'Julho': '07','Agosto': '08','Setembro': '09','Outubro': '10','Novembro': '11','Dezembro': '12',}
+						'Julho': '07','Agosto': '08','Setembro': '09','Outubro': '10','Novembro': '11','Dezembro': '12'}
 
 			date = ano+"/"+dict_mes[mes]
 
@@ -268,7 +270,7 @@ def validar_chamada_historico(tela_anterior, lab, mes, ano):
 	
 			for colab in cpf_nome_colab:
 				counter = timedelta()
-				cursor.execute("SELECT entrada, saida FROM Frequencia WHERE entrada LIKE ? and cpf = ?",((date+'%', colab[0])))
+				cursor.execute("SELECT entrada, saida FROM Frequencia WHERE entrada LIKE ? and cpf = ? and saida IS NOT NULL",((date+'%', colab[0])))
 				for frequencia in cursor.fetchall():
 					entrada = retorna_objeto_date(frequencia[0])
 					saida = retorna_objeto_date(frequencia[1])
@@ -277,8 +279,9 @@ def validar_chamada_historico(tela_anterior, lab, mes, ano):
 				tupla = (colab[1], str(counter))
 				lista_tuplas.append(tupla)
 					
-			inter.chamar_historico_2(tela_anterior, lista_tuplas)
-		except:
+			inter.chamar_historico_2(tela_anterior, lista_tuplas, lab, mes, ano)
+		except Exception as e:
+			print(e)
 			pass
 
 	else:
@@ -369,13 +372,13 @@ def deslogar(tela_anterior):
 	atualizar_user(None)
 
 	
-def validar_consulta(tela_anterior, lab):
+def validar_consulta(tela_anterior, lab, event=None):
 	if lab.get() != "" and lab.get() != "*Selecione o laboratório*":
 		inter.chamar_tela_consulta_2(tela_anterior, lab.get())
 	else:
 		inter.pop_up("ERROR", "Consulta Inválida1")
 
-def validar_consulta_2(tela_anterior, nome_colab, lab):
+def validar_consulta_2(tela_anterior, nome_colab, lab, event=None):
 	try:
 		colab = retorna_colab(nome_colab, lab)
 		inter.chamar_tela_dados_colaborador(tela_anterior, nome_colab, lab)

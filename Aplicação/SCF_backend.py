@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.filedialog import askopenfilename
 import datetime
+from datetime import datetime, timedelta
 import SCF_interface as inter
 import sqlite3
 import tkinter.font as tkFont
@@ -180,6 +181,14 @@ def retorna_user(cpf):
 	colab = Colaborador(tupla[0], tupla[1], tupla[2], tupla[3], tupla[4], tupla[5], tupla[7], tupla[8], tupla[11])
 	return colab
 
+def retorna_objeto_date(data):
+	data_hora = data.split(" ")
+	data = data_hora[0].split("/")
+	hora = data_hora[1].split(":")
+	date = datetime(int(data[0]),int(data[1]),int(data[2]), int(hora[0]),int(hora[1]),int(hora[2]))
+	return date
+
+
 class ImageMethods():
 	@staticmethod
 	def get_path(line_path):
@@ -240,6 +249,42 @@ def validar_data(data):
 	except Exception as e:
 		print(e)
 		return False
+
+
+def validar_chamada_historico(tela_anterior, lab, mes, ano):
+	laboratorio, mes, ano = lab.get(), mes.get(), ano.get()
+	if laboratorio != "*Selecione o laboratório*":
+		try:
+			cursor = con.cursor
+			dict_mes = {'Janeiro': '01','Fevereiro': '02','Março': '03','Abril': '04','Maio': '05','Junho': '06',
+						'Julho': '07','Agosto': '08','Setembro': '09','Outubro': '10','Novembro': '11','Dezembro': '12',}
+
+			date = ano+"/"+dict_mes[mes]
+
+			cursor.execute("SELECT cpf,Nome From Colaborador WHERE Lab = '%s'"%laboratorio)
+
+			lista_tuplas = []
+			cpf_nome_colab = cursor.fetchall()
+	
+			for colab in cpf_nome_colab:
+				counter = timedelta()
+				cursor.execute("SELECT entrada, saida FROM Frequencia WHERE entrada LIKE ? and cpf = ?",((date+'%', colab[0])))
+				for frequencia in cursor.fetchall():
+					entrada = retorna_objeto_date(frequencia[0])
+					saida = retorna_objeto_date(frequencia[1])
+					counter += (saida-entrada)
+
+				tupla = (colab[1], str(counter))
+				lista_tuplas.append(tupla)
+					
+			inter.chamar_historico_2(tela_anterior, lista_tuplas)
+		except:
+			pass
+
+	else:
+		inter.pop_up("ERROR", "Laboratorio inválido!")
+		pass
+
 
 def validar_login(tela_anterior, login, senha, event=None):
 	

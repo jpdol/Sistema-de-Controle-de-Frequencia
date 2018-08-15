@@ -380,35 +380,50 @@ def chamar_historico(tela_anterior):
 	lb = Label (tela_consulta, text="Consultar", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
 
 	#lab
-	lb_lab = Label(tela_consulta, text="Laboratório:", bg="white")
-	lb_lab.place(x=110, y=130)
+	lb_lab = Label(tela_consulta, text="Laboratório:", bg="white").place(x=110, y=100)
+	lb_mes = Label(tela_consulta, text="Mês:", bg="white").place(x=110,y=145)
+	lb_ano = Label(tela_consulta, text="Ano:", bg="white").place(x=250,y=145)
+
 	lista_lab = retorna_lista_lab()
 	lista_lab.insert(0,"*Selecione o laboratório*")
 
+	lista_mes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+	lista_ano = ["2018","2019","2020","2021","2022","2023","2024","2025","2026","2027","2028","2029","2030"]
+
 	entrada_lab = ttk.Combobox(tela_consulta, width=37, state="readonly")
-	entrada_lab.place(x=110, y=150)	
+	entrada_lab.place(x=110, y=120)	
 	entrada_lab['values'] = lista_lab
 	entrada_lab.current(0)
 
-	bt_ok = Button(tela_consulta, width=10, text="Avançar", bg="white", command=partial(chamar_historico_2, tela_consulta, entrada_lab)).place(x=275, y=177)
+	entrada_mes = ttk.Combobox(tela_consulta, width=12, state="readonly")
+	entrada_mes.place(x=110, y=165)	
+	entrada_mes['values'] = lista_mes
+	entrada_mes.current(0)
+
+	entrada_ano = ttk.Combobox(tela_consulta, width=5, state="readonly")
+	entrada_ano.place(x=250, y=165)	
+	entrada_ano['values'] = lista_ano
+	entrada_ano.current(0)
+
+	bt_ok = Button(tela_consulta, width=10, text="Avançar", bg="white", command=partial(validar_chamada_historico, tela_consulta, entrada_lab, entrada_mes, entrada_ano)).place(x=275, y=200)
 	bt_voltar = Button (tela_consulta, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_consulta)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	tela_anterior.destroy()
 
 
 
-def chamar_historico_2(tela_anterior, lab):
+def chamar_historico_2(tela_anterior, lista_tuplas):
 
 	header = ['Nome', 'Horas']
-	lista = []
 	tela_anterior.destroy()
 
 	tela_hist = Tk()
 	tela_hist["bg"] = "white"
 	lb = Label (tela_hist, text="Histórico", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=20)
+	bt_voltar = Button(tela_hist, text="Voltar", bg="white", command = partial(chamar_historico, tela_hist)).pack(side=TOP, anchor=NW, pady=4, padx=4)
 	tela_hist.geometry("500x300+300+200")
 	tela_hist.resizable(0, 0)
 	tela_hist.wm_title("Histórico")
-	tela_hist = McListBox(header, lista)
+	tela_hist = McListBox(header, lista_tuplas)
 
 
 def chamar_tela_login():

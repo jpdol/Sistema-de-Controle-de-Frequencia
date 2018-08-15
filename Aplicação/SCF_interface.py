@@ -59,7 +59,6 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 
 	if SCF_backend.user.funcao in ['ADM', 'Coordenador Geral']:	
 		lista_lab = retorna_lista_lab()
-		lista_lab.remove("Administração")
 		lista_lab.insert(0, "*Selecione o laboratório*")
 		lista_func = ['Pesquisador', 'Gestor', 'Coordenador', 'ADM', 'Coordenador Geral']
 
@@ -122,6 +121,10 @@ def chamar_tela_cadastro_colaborador(tela_anterior):
 	entrada_confirma_senha = Entry(tela_cadastro_colaborador, width=40, bg="white", show="*")
 	entrada_confirma_senha.place(x=dis_x, y=dis_y_inicial+530)
 
+	tela_cadastro_colaborador.bind('<Return>', lambda event: cadastrar_colaborador(tela_cadastro_colaborador, entrada_nome, entrada_dt_nasc,
+																					entrada_lab, entrada_func, entrada_CH, entrada_dt_ing, entrada_status, entrada_cpf,
+																					entrada_senha, entrada_confirma_senha, entrada_foto, event))
+
 	bt_ok = Button(tela_cadastro_colaborador, width=10, text="Cadastrar", bg="white", command=partial(cadastrar_colaborador, tela_cadastro_colaborador, entrada_nome, entrada_dt_nasc,
 																									  entrada_lab, entrada_func, entrada_CH, entrada_dt_ing, entrada_status, entrada_cpf,
 																									  entrada_senha, entrada_confirma_senha, entrada_foto)).place(x=275, y=625)
@@ -162,6 +165,8 @@ def chamar_tela_cadastro_laboratorio(tela_anterior):
 
 	label_info = Label(tela_cadastro_laboratorio, text="*Campo não obrigatório!", font=['TkDefaultFont', 7], bg="white")
 	label_info.place(x=110, y=220)
+
+	tela_cadastro_laboratorio.bind('<Return>', lambda event:cadastrar_laboratorio(tela_cadastro_laboratorio, entrada_nome, entrada_sigla, entrada_logo, event))
 
 	bt_voltar = Button (tela_cadastro_laboratorio, width=10, text="Voltar", bg="white", command=partial(chamar_tela_cadastro, tela_cadastro_laboratorio)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	bt_ok = Button(tela_cadastro_laboratorio, width=10, text="Cadastrar", bg="white", command=partial(cadastrar_laboratorio, tela_cadastro_laboratorio, entrada_nome, entrada_sigla, entrada_logo)).place(x=275, y=250)
@@ -205,6 +210,8 @@ def chamar_tela_dados_lab(tela_anterior, lab):
 	label_info = Label(tela_dados_lab, text="*Campo não obrigatório!", font=['TkDefaultFont', 7], bg="white")
 	label_info.place(x=110, y=220)
 
+	tela_dados_lab.bind('<Return>', lambda event:atualizar_cadastro_laboratorio(tela_dados_lab, entrada_nome, entrada_sigla, entrada_logo, event))
+
 	bt_voltar = Button (tela_dados_lab, width=10, text="Voltar", bg="white", command=partial(chamar_tela_consulta_2, tela_dados_lab, lab)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	bt_remover = Button(tela_dados_lab, width=20, text="Excluir laboratório", bg="white", command=partial(excluir_lab, tela_dados_lab, dados_lab[0], dados_lab[1])).pack(side=RIGHT, anchor = SE, pady=0, padx=4)
 	bt_ok = Button(tela_dados_lab, width=10, text="Atualizar", bg="white", command=partial(atualizar_cadastro_laboratorio, tela_dados_lab, entrada_nome, entrada_sigla, entrada_logo)).place(x=275, y=240)
@@ -239,6 +246,8 @@ def chamar_tela_consulta(tela_anterior):
 	entrada_lab['values'] = lista_lab
 	entrada_lab.current(0)
 
+	tela_consulta.bind('<Return>',lambda event:validar_consulta(tela_consulta, entrada_lab, event))
+
 	bt_ok = Button(tela_consulta, width=10, text="Avançar", bg="white", command=partial(validar_consulta, tela_consulta, entrada_lab)).place(x=275, y=177)
 	bt_voltar = Button (tela_consulta, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_consulta)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	tela_anterior.destroy()
@@ -263,7 +272,9 @@ def chamar_tela_consulta_2(tela_anterior, lab):
 	entrada_colab = ttk.Combobox(tela_consulta, width=37, state="readonly")
 	entrada_colab.place(x=110, y=150)	
 	entrada_colab['values'] = lista_colab
-	entrada_colab.current(0)		
+	entrada_colab.current(0)
+
+	tela_consulta.bind('<Return>', lambda event:validar_consulta_2(tela_consulta, entrada_colab, lab, event))	
 
 	bt_ok = Button(tela_consulta, width=10, text="Avançar", bg="white", command = partial(validar_consulta_2, tela_consulta, entrada_colab, lab)).place(x=275, y=177)
 	bt_consulta_lab = Button(tela_consulta, width=20, text="Consultar laboratório", bg="white", command=partial(chamar_tela_dados_lab, tela_consulta, lab)).pack(side=RIGHT, anchor = SE, pady=4, padx=4)
@@ -361,6 +372,9 @@ def chamar_tela_dados_colaborador(tela_anterior, nome_colab, lab):
 	entrada_confirma_senha.place(x=dis_x, y=dis_y_inicial+480)
 	entrada_confirma_senha.insert(0, colab.senha)
 
+	tela_cadastro_colaborador.bind('<Return>', lambda event:atualizar_cadastro_colaborador(tela_cadastro_colaborador, entrada_nome, entrada_dt_nasc,
+																							entrada_lab, entrada_func, entrada_CH, entrada_dt_ing, entrada_status,
+																							entrada_senha, entrada_confirma_senha, entrada_foto, nome_colab, colab.cpf, event))
 
 	bt_ok = Button(tela_cadastro_colaborador, width=10, text="Atualizar", bg="white", command=partial(atualizar_cadastro_colaborador, tela_cadastro_colaborador, entrada_nome, entrada_dt_nasc,
 																									  entrada_lab, entrada_func, entrada_CH, entrada_dt_ing, entrada_status,
@@ -372,17 +386,17 @@ def chamar_tela_dados_colaborador(tela_anterior, nome_colab, lab):
 	
 
 def chamar_historico(tela_anterior):
-	tela_consulta = Tk()
-	tela_consulta["bg"]="white"
-	tela_consulta.geometry("500x300+300+200")
-	tela_consulta.title("Consulta")
-	tela_consulta.resizable(0,0) 
-	lb = Label (tela_consulta, text="Consultar", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
+	tela_hist = Tk()
+	tela_hist["bg"]="white"
+	tela_hist.geometry("500x300+300+200")
+	tela_hist.title("Consulta")
+	tela_hist.resizable(0,0) 
+	lb = Label (tela_hist, text="Consultar", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
 
 	#lab
-	lb_lab = Label(tela_consulta, text="Laboratório:", bg="white").place(x=110, y=100)
-	lb_mes = Label(tela_consulta, text="Mês:", bg="white").place(x=110,y=145)
-	lb_ano = Label(tela_consulta, text="Ano:", bg="white").place(x=250,y=145)
+	lb_lab = Label(tela_hist, text="Laboratório:", bg="white").place(x=110, y=100)
+	lb_mes = Label(tela_hist, text="Mês:", bg="white").place(x=110,y=145)
+	lb_ano = Label(tela_hist, text="Ano:", bg="white").place(x=250,y=145)
 
 	lista_lab = retorna_lista_lab()
 	lista_lab.insert(0,"*Selecione o laboratório*")
@@ -390,30 +404,34 @@ def chamar_historico(tela_anterior):
 	lista_mes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
 	lista_ano = ["2018","2019","2020","2021","2022","2023","2024","2025","2026","2027","2028","2029","2030"]
 
-	entrada_lab = ttk.Combobox(tela_consulta, width=37, state="readonly")
+	entrada_lab = ttk.Combobox(tela_hist, width=37, state="readonly")
 	entrada_lab.place(x=110, y=120)	
 	entrada_lab['values'] = lista_lab
 	entrada_lab.current(0)
 
-	entrada_mes = ttk.Combobox(tela_consulta, width=12, state="readonly")
+	entrada_mes = ttk.Combobox(tela_hist, width=12, state="readonly")
 	entrada_mes.place(x=110, y=165)	
 	entrada_mes['values'] = lista_mes
 	entrada_mes.current(0)
 
-	entrada_ano = ttk.Combobox(tela_consulta, width=5, state="readonly")
+	entrada_ano = ttk.Combobox(tela_hist, width=5, state="readonly")
 	entrada_ano.place(x=250, y=165)	
 	entrada_ano['values'] = lista_ano
 	entrada_ano.current(0)
 
-	bt_ok = Button(tela_consulta, width=10, text="Avançar", bg="white", command=partial(validar_chamada_historico, tela_consulta, entrada_lab, entrada_mes, entrada_ano)).place(x=275, y=200)
-	bt_voltar = Button (tela_consulta, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_consulta)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
+	tela_hist.bind('<Return>', lambda event: validar_chamada_historico(tela_hist, entrada_lab, entrada_mes, entrada_ano, event))
+
+	bt_ok = Button(tela_hist, width=10, text="Avançar", bg="white", command=partial(validar_chamada_historico, tela_hist, entrada_lab, entrada_mes, entrada_ano)).place(x=275, y=200)
+	bt_voltar = Button (tela_hist, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_hist)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	tela_anterior.destroy()
 
 
 
-def chamar_historico_2(tela_anterior, lista_tuplas):
+def chamar_historico_2(tela_anterior, lista_tuplas, lab, mes, ano):
 
-	header = ['Nome', 'Horas']
+	header = ['Nome', 'Horas Acumuladas']
+	titulo = "Histórico - "+lab.get()+" - "+mes+" - "+ano
+	
 	tela_anterior.destroy()
 
 	tela_hist = Tk()
@@ -422,8 +440,9 @@ def chamar_historico_2(tela_anterior, lista_tuplas):
 	bt_voltar = Button(tela_hist, text="Voltar", bg="white", command = partial(chamar_historico, tela_hist)).pack(side=TOP, anchor=NW, pady=4, padx=4)
 	tela_hist.geometry("500x300+300+200")
 	tela_hist.resizable(0, 0)
-	tela_hist.wm_title("Histórico")
+	tela_hist.wm_title(titulo)
 	tela_hist = McListBox(header, lista_tuplas)
+
 
 
 def chamar_tela_login():

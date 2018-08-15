@@ -115,16 +115,12 @@ def pegar_digital(tela_anterior, cpf):
 	conexao.write(b'e\r\n')
 	entrada = conexao.readline()
 	if (entrada==b'Pronto para receber\r\n'):
-		print(1)
 		idDigital = retorna_posicao()
 		conexao.write(str.encode(str(idDigital)+'\r\n'))
 		entrada = conexao.readline()
 		if(entrada==b'Mete o dedo\r\n'):
-			print(2)
 			if(conexao.readline()==b'Remove finger\r\n'):
-				print(3)
 				if(conexao.readline()==b"Place same finger again\r\n"):
-					print(4)
 					if(conexao.readline()==b'Stored\r\n'):
 						cursor = con.cursor
 						cursor.execute(''' UPDATE IdDisponivel 
@@ -135,7 +131,6 @@ def pegar_digital(tela_anterior, cpf):
 						con.conexao.commit()
 
 						pop_up("SUCCESSFUL", "Digital cadastrada com sucesso")
-						print("foi")
 						
 
 					else:
@@ -202,10 +197,10 @@ def validar_digital(tela_anterior):
 			cursor.execute("SELECT count(cpf) FROM Frequencia  WHERE cpf='%s' and saida IS NULL"%cpf)
 			num = cursor.fetchall()[0][0]
 
-			if num==1:
+			if num==0:
 				chamar_perfil_saida(cpf)
 	
-			elif num==0:
+			elif num==1:
 				chamar_perfil_entrada(cpf)
 
 		except Exception as e:
@@ -219,16 +214,15 @@ def chamar_perfil_entrada(cpf):
 		colab = retorna_user(cpf)
 
 		tela_perfil = Tk()
-		tela_perfil.geometry("500x350+300+200")
+		tela_perfil.attributes('-fullscreen', True)
 		tela_perfil["bg"] = "white"
 		tela_perfil.title("Perfil do colaborador")
-		#tela_perfil.overridedirect(1)
+		tela_perfil.resizable(0, 0)
 
 		maxwidth = 150
 		maxheight = 200
 		
-		label_title = Label(tela_perfil, bg="white", text="Entrada liberada", fg= "orange", font=["Verdana", 30]).grid(row=0, column=0, columnspan=2, padx=80)
-		labe_fake_1 = Label(tela_perfil, text="     ", bg="white").grid(row=1, columnspan=2, column=0)
+		label_title = Label(tela_perfil, bg="white", text="Entrada liberada", fg= "orange", font=["Verdana", 30]).pack(pady=100)
 
 		if colab.foto != None:
 			pic = Image.open(io.BytesIO(colab.foto))
@@ -240,14 +234,14 @@ def chamar_perfil_entrada(cpf):
 
 			label_foto = Label(tela_perfil, width=150, height=150, image = pic, bg="orange")
 			label_foto.image =  pic
-			label_foto.grid(padx=10, row=2, rowspan=3)
+			label_foto.place(x=400, y =300)
 		else:
-			label_foto = Label(tela_perfil, width=20, height=10, bg="orange").grid(padx=10, row=2, rowspan=3)
+			label_foto = Label(tela_perfil, width=20, height=10, bg="orange").place(x=400, y =300)
 
-		label_nome = Label(tela_perfil, bg="white", text="Nome: "+colab.nome,   font=["Verdana", 13]).grid(row=2, column=1, sticky=W)
-		label_lab = Label(tela_perfil, bg="white", text="Laboratório: "+colab.lab,     font=["Verdana", 13]).grid(row=3,column=1, sticky=W)
-		label_func = Label(tela_perfil, bg="white", text="Função: "+colab.funcao, font=["Verdana", 13]).grid(row=4,column=1, sticky=W)
-		bt_confirma = Button(tela_perfil, bg="white", text = "Confirmar", width = 15, command = partial(pre_tela_principal, tela_perfil)).place(x=200, y=260)
+		label_nome = Label(tela_perfil, bg="white", text="Nome: "+colab.nome,   font=["Verdana", 13]).place(x=600, y=300)
+		label_lab = Label(tela_perfil, bg="white", text="Laboratório: "+colab.lab,     font=["Verdana", 13]).place(x=600, y=340)
+		label_func = Label(tela_perfil, bg="white", text="Função: "+colab.funcao, font=["Verdana", 13]).place(x=600, y=380)
+		bt_confirma = Button(tela_perfil, bg="white", text = "Confirmar", width = 15, command = partial(pre_tela_principal, tela_perfil)).place(x=600, y=420)
 		os.remove("temp.png")
 
 		
@@ -260,7 +254,7 @@ def chamar_perfil_saida(cpf):
 		colab = retorna_user(cpf)
 
 		tela_perfil = Tk()
-		tela_perfil.geometry("500x350+300+200")
+		tela_perfil.attributes('-fullscreen', True)
 		tela_perfil["bg"] = "white"
 		tela_perfil.title("Perfil do colaborador")
 		#tela_perfil.overridedirect(1)
@@ -268,8 +262,7 @@ def chamar_perfil_saida(cpf):
 		maxwidth = 150
 		maxheight = 200
 		
-		label_title = Label(tela_perfil, bg="white", text="Saída Validada", fg= "orange", font=["Verdana", 30]).grid(row=0, column=0, columnspan=2, padx=80)
-		labe_fake_1 = Label(tela_perfil, text="     ", bg="white").grid(row=1, columnspan=2, column=0)
+		label_title = Label(tela_perfil, bg="white", text="Saída Validada", fg= "orange", font=["Verdana", 30]).pack(pady=100)
 
 		if colab.foto != None:
 			pic = Image.open(io.BytesIO(colab.foto))
@@ -281,14 +274,14 @@ def chamar_perfil_saida(cpf):
 
 			label_foto = Label(tela_perfil, width=150, height=150, image = pic, bg="orange")
 			label_foto.image =  pic
-			label_foto.grid(padx=10, row=2, rowspan=3)
+			label_foto.place(x=400, y =300)
 		else:
-			label_foto = Label(tela_perfil, width=20, height=10, bg="orange").grid(padx=10, row=2, rowspan=3)
+			label_foto = Label(tela_perfil, width=20, height=10, bg="orange").place(x=400, y =300)
 
-		label_nome = Label(tela_perfil, bg="white", text="Nome: "+colab.nome,   font=["Verdana", 13]).grid(row=2, column=1, sticky=W)
-		label_lab = Label(tela_perfil, bg="white", text="Laboratório: "+colab.lab,     font=["Verdana", 13]).grid(row=3,column=1, sticky=W)
-		label_func = Label(tela_perfil, bg="white", text="Função: "+colab.funcao, font=["Verdana", 13]).grid(row=4,column=1, sticky=W)
-		bt_confirma = Button(tela_perfil, bg="white", text = "Confirmar", width = 15, command = partial(pre_tela_principal, tela_perfil)).place(x=200, y=260)
+		label_nome = Label(tela_perfil, bg="white", text="Nome: "+colab.nome,   font=["Verdana", 13]).place(x=600, y=300)
+		label_lab = Label(tela_perfil, bg="white", text="Laboratório: "+colab.lab,     font=["Verdana", 13]).place(x=600, y=340)
+		label_func = Label(tela_perfil, bg="white", text="Função: "+colab.funcao, font=["Verdana", 13]).place(x=600, y=380)
+		bt_confirma = Button(tela_perfil, bg="white", text = "Confirmar", width = 15, command = partial(pre_tela_principal, tela_perfil)).place(x=600, y=420)
 		os.remove("temp.png")
 
 		
@@ -296,7 +289,7 @@ def chamar_perfil_saida(cpf):
 		return False
 	
 
-def cadastrar_digital(login, senha, tela_anterior):
+def cadastrar_digital(login, senha, tela_anterior, event=None):
 	if (login.get() != "") and (senha.get() != ""):
 		try:
 			colab = retorna_user(login.get())
@@ -321,19 +314,19 @@ def cadastrar_digital_2(tela_anterior, login):
 
 	tela_login = Tk()
 	tela_login["bg"]="white"
-	tela_login.geometry("500x350+300+200") #dimensoes da janela --> Largura x Altura + DistanciaDaMargemEsquerda + DistanciaDaMargemSuperior
-	tela_login.title("Sistema de Controle de Frequência") #título da janela
+	tela_login.attributes('-fullscreen', True) 
+	tela_login.title("Sistema de Controle de Frequência") 
 	
 	#Logo
-	imagem = PhotoImage(file="imagens/hub.png")
+	imagem = PhotoImage(file="imagens/hub2.png")
 	lb_image = Label(tela_login, image = imagem, bg="white")
 	lb_image.image = imagem
-	lb_image.pack(pady=30)
+	lb_image.pack(pady=110)
 	
 	bt_iniciar = Button(tela_login, text="Inserir Digital", width=15, command=partial(pegar_digital, tela_login, login), bg ="white")
 	bt_iniciar.pack()
-
-	lb = Label(tela_login, font=['TkDefaultFont', 10], text="*Aperte o botão \'Inserir Digital\'\nEm seguida, insira sua digital enquanto \no led verde estiver ligado\nRetire quando o led vermelho ligar\nInsira novamente quando o led verde ligar", bg="white").pack(side=BOTTOM, pady=2)
+	bt_voltar = Button(tela_login, width=10, text="Voltar", bg="white", command=partial(pre_tela_principal, tela_login)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
+	lb = Label(tela_login, font=['TkDefaultFont', 10], text="*Aperte o botão \'Inserir Digital\'\nEm seguida, insira sua digital enquanto \no led verde estiver ligado\nRetire quando o led vermelho ligar\nInsira novamente quando o led verde ligar", bg="white").pack(side=TOP, pady=20)
 
 
 
@@ -342,40 +335,42 @@ def chamar_tela_login(tela_anterior):
 	tela_anterior.destroy()
 	tela_login = Tk()
 	tela_login["bg"]="white"
-	tela_login.geometry("500x350+300+200") #dimensoes da janela --> Largura x Altura + DistanciaDaMargemEsquerda + DistanciaDaMargemSuperior
+	tela_login.attributes('-fullscreen', True) #dimensoes da janela --> Largura x Altura + DistanciaDaMargemEsquerda + DistanciaDaMargemSuperior
 	tela_login.title("Sistema de Controle de Frequência") #título da janela
 
 	#Logo
-	imagem = PhotoImage(file="imagens/hub.png")
+	imagem = PhotoImage(file="imagens/hub2.png")
 	lb_image = Label(tela_login, image = imagem, bg="white")
 	lb_image.image = imagem
-	lb_image.pack(pady=30)
+	lb_image.pack(pady=110)
 	
-	lb_login = Label(tela_login, text="CPF:", bg="white").place(x=120, y=150)
+	lb_login = Label(tela_login, text="CPF:", bg="white").place(x=560, y=357)
 	entrada_login = Entry(tela_login, width=40, bg="white")
-	entrada_login.place(x=120, y=170)
+	entrada_login.pack(pady=2)
 	
-	lb_senha = Label(tela_login, text="Senha:", bg="white").place(x=120, y=200)
+	lb_senha = Label(tela_login, text="Senha:", bg="white").place(x=560, y=398)
 	entrada_senha = Entry(tela_login, width=40, bg="white", show="*")
-	entrada_senha.place(x=120, y=220)
-	bt_logar = Button(tela_login, width=10, bg="white", text="Login", command=partial(cadastrar_digital, entrada_login, entrada_senha, tela_login)).place(x=285, y=250)
+	entrada_senha.pack(pady=18)
+
+	tela_login.bind('<Return>', lambda event: cadastrar_digital(entrada_login, entrada_senha,tela_login, event))
+
+	bt_logar = Button(tela_login, width=10, bg="white", text="Login", command=partial(cadastrar_digital, entrada_login, entrada_senha, tela_login)).place(x=723, y=450)
 	bt_voltar = Button(tela_login, width=10, text="Voltar", bg="white", command=partial(pre_tela_principal, tela_login)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 
 def pre_tela_principal(tela_anterior):
 	tela_anterior.destroy()
-	chamar_tela_principal()
+	chamar_tela_principal() 
 
 def chamar_tela_principal():
 	tela_login = Tk()
 	tela_login["bg"]="white"
-	tela_login.geometry("500x350+300+200") #dimensoes da janela --> Largura x Altura + DistanciaDaMargemEsquerda + DistanciaDaMargemSuperior
+	tela_login.attributes('-fullscreen', True) #dimensoes da janela --> Largura x Altura + DistanciaDaMargemEsquerda + DistanciaDaMargemSuperior
 	tela_login.title("Sistema de Controle de Frequência") #título da janela
-	
-	#Logo
-	imagem = PhotoImage(file="imagens/hub.png")
+
+	imagem = PhotoImage(file="imagens/hub2.png")
 	lb_image = Label(tela_login, image = imagem, bg="white")
 	lb_image.image = imagem
-	lb_image.pack(pady=30)
+	lb_image.pack(pady=110)
 	
 	bt_iniciar = Button(tela_login, text="Inserir Digital", width=15, command=partial(validar_digital,tela_login), bg ="white")
 	bt_iniciar.pack(pady=2)

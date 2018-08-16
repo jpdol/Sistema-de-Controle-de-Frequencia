@@ -75,7 +75,7 @@ def retorna_datetime():
 	
 	segundos = str(now.second)
 	if len(segundos)<2:
-		mes = '0'+segundos
+		segundos = '0'+segundos
 	
 	
 	data_hora = ano+'/'+mes+'/'+dia+' '+hora+':'+minutos+':'+segundos

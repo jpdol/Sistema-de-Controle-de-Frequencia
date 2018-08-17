@@ -253,7 +253,7 @@ def validar_data(data):
 		return False
 
 
-def validar_chamada_historico(tela_anterior, lab, mes, ano, event=None):
+def validar_chamada_historico(tela_anterior, lab, mes, ano, tipo, event=None):
 	laboratorio, mes, ano = lab.get(), mes.get(), ano.get()
 	if laboratorio != "*Selecione o laboratório*":
 		try:
@@ -268,18 +268,25 @@ def validar_chamada_historico(tela_anterior, lab, mes, ano, event=None):
 			lista_tuplas = []
 			cpf_nome_colab = cursor.fetchall()
 	
-			for colab in cpf_nome_colab:
-				counter = timedelta()
-				cursor.execute("SELECT entrada, saida FROM Frequencia WHERE entrada LIKE ? and cpf = ? and saida IS NOT NULL",((date+'%', colab[0])))
-				for frequencia in cursor.fetchall():
-					entrada = retorna_objeto_date(frequencia[0])
-					saida = retorna_objeto_date(frequencia[1])
-					counter += (saida-entrada)
+			if tipo=='r':
+				for colab in cpf_nome_colab:
+					counter = timedelta()
+					cursor.execute("SELECT entrada, saida FROM Frequencia WHERE entrada LIKE ? and cpf = ? and saida IS NOT NULL",((date+'%', colab[0])))
+					for frequencia in cursor.fetchall():
+						entrada = retorna_objeto_date(frequencia[0])
+						saida = retorna_objeto_date(frequencia[1])
+						counter += (saida-entrada)
 
-				tupla = (colab[1], str(counter))
-				lista_tuplas.append(tupla)
+					tupla = (colab[1], str(counter))
+					lista_tuplas.append(tupla)
+			else:
+				for colab in cpf_nome_colab:
+					cursor.execute("SELECT entrada, saida FROM Frequencia WHERE entrada LIKE ? and cpf = ? and saida IS NOT NULL",((date+'%', colab[0])))
+					for frequencia in cursor.fetchall():
+						tupla = (colab[1], frequencia[0],frequencia[1])
+						lista_tuplas.append(tupla)
 					
-			inter.chamar_historico_2(tela_anterior, lista_tuplas, lab, mes, ano)
+			inter.chamar_historico_2(tela_anterior, lista_tuplas, lab, mes, ano, tipo)
 		except Exception as e:
 			print(e)
 			pass

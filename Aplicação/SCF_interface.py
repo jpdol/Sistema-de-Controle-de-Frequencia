@@ -389,9 +389,9 @@ def chamar_historico(tela_anterior):
 	tela_hist = Tk()
 	tela_hist["bg"]="white"
 	tela_hist.geometry("500x300+300+200")
-	tela_hist.title("Consulta")
+	tela_hist.title("Consultar Histórico")
 	tela_hist.resizable(0,0) 
-	lb = Label (tela_hist, text="Consultar", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
+	lb = Label (tela_hist, text="Consultar Histórico", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=50)
 
 	#lab
 	lb_lab = Label(tela_hist, text="Laboratório:", bg="white").place(x=110, y=100)
@@ -419,17 +419,22 @@ def chamar_historico(tela_anterior):
 	entrada_ano['values'] = lista_ano
 	entrada_ano.current(0)
 
-	tela_hist.bind('<Return>', lambda event: validar_chamada_historico(tela_hist, entrada_lab, entrada_mes, entrada_ano, event))
+	tela_hist.bind('<Return>', lambda event: validar_chamada_historico(tela_anterior=tela_hist, lab=entrada_lab, mes=entrada_mes, ano=entrada_ano, tipo='r', event=event))
 
-	bt_ok = Button(tela_hist, width=10, text="Avançar", bg="white", command=partial(validar_chamada_historico, tela_hist, entrada_lab, entrada_mes, entrada_ano)).place(x=275, y=200)
+	bt_hist_resumido = Button(tela_hist, width=10, text="Resumido", bg="white", command=partial(validar_chamada_historico, tela_hist, entrada_lab, entrada_mes, entrada_ano,'r')).place(x=180, y=200)
+	bt_hist_detalhado = Button(tela_hist, width=10, text="Detalhado", bg="white", command=partial(validar_chamada_historico, tela_hist, entrada_lab, entrada_mes, entrada_ano,'d')).place(x=275, y=200)
 	bt_voltar = Button (tela_hist, width=10, text="Voltar", bg="white", command=partial(chamar_tela_inicial, tela_hist)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	tela_anterior.destroy()
 
 
 
-def chamar_historico_2(tela_anterior, lista_tuplas, lab, mes, ano):
+def chamar_historico_2(tela_anterior, lista_tuplas, lab, mes, ano, tipo):
 
-	header = ['Nome', 'Horas Acumuladas']
+	if tipo == 'r':
+		header = ['Nome', 'Horas Acumuladas']
+	else:
+		header = ['Nome', 'Entrada', 'Saida']
+
 	titulo = "Histórico - "+lab.get()+" - "+mes+" - "+ano
 	
 	tela_anterior.destroy()

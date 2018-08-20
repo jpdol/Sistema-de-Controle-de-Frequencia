@@ -296,7 +296,7 @@ int getFingerprintIDez() {
 
   p = finger.fingerFastSearch();
   if (p != FINGERPRINT_OK){
-    Serial.println("Invalido");
+    //Serial.println("Invalido");
     return -1;
   }
   

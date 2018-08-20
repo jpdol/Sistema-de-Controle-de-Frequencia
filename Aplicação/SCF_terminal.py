@@ -11,8 +11,8 @@ import os
 
 class Conexao():
 	def __init__(self):
-		self.path = r"DataBase"
-		self.conexao = sqlite3.connect(self.path + r"\SCF.db")
+		self.path = r"\\LSEHOST\Documents\SCF\SCF.db"
+		self.conexao = sqlite3.connect(self.path)
 		self.cursor = self.conexao.cursor()
 		self.cursor.execute("CREATE TABLE IF NOT EXISTS Digital (cpf VARCHAR(11), idDigital INT, PRIMARY KEY(cpf))")
 		self.cursor.execute("CREATE TABLE IF NOT EXISTS IdDisponivel (idDigital INT, disponivel INT, PRIMARY KEY(idDigital))")
@@ -108,8 +108,6 @@ def retorna_posicao():
 		pop_up("ERROR", "Banco cheio")
 
 
-
-
 def pegar_digital(tela_anterior, cpf):
 	conexao.reset_input_buffer()
 	conexao.write(b'e\r\n')
@@ -162,54 +160,9 @@ def marcar_frequencia(idDigital):
 		cursor.execute("INSERT INTO Frequencia VALUES (?, ?, ?)", (cpf, retorna_datetime(), None))
 	con.conexao.commit()
 		
-	
 
-def validar_digital(tela_anterior):
-	conexao.reset_input_buffer()
-	confianca = 0
-	tempo_inicial = time.time()
-	tempo_atual = time.time()
-	detectou = False
-	while(confianca<90 and (tempo_atual-tempo_inicial)<10):
-		tempo_atual = time.time()
-		entrada = conexao.readline()
-		if(entrada == b"Invalido\r\n"):
-			continue
-		else:
-			idDigital = int(entrada)
-			confianca = int(conexao.readline())
-
-	if tempo_atual-tempo_inicial < 10:
-		detectou = True
-
-
-	if detectou:
-		try:
-			cursor = con.cursor
-			cursor.execute("SELECT cpf FROM Digital WHERE idDigital='%d'"%idDigital)
-			cpf = str(cursor.fetchall()[0][0])
-			tela_anterior.destroy()
-			marcar_frequencia(idDigital)
-			
-			cursor = con.cursor
-			cursor.execute("SELECT cpf FROM Digital WHERE idDigital='%d'"%idDigital)
-			cpf = str(cursor.fetchall()[0][0])
-			cursor.execute("SELECT count(cpf) FROM Frequencia  WHERE cpf='%s' and saida IS NULL"%cpf)
-			num = cursor.fetchall()[0][0]
-
-			if num==0:
-				chamar_perfil_saida(cpf)
-	
-			elif num==1:
-				chamar_perfil_entrada(cpf)
-
-		except Exception as e:
-			return False
-
-
-
-def chamar_perfil_entrada(cpf):
-
+def chamar_perfil_entrada(cpf, tela_anterior):
+	tela_anterior.destroy()
 	try:
 		colab = retorna_user(cpf)
 
@@ -241,15 +194,16 @@ def chamar_perfil_entrada(cpf):
 		label_nome = Label(tela_perfil, bg="white", text="Nome: "+colab.nome,   font=["Verdana", 13]).place(x=600, y=300)
 		label_lab = Label(tela_perfil, bg="white", text="Laboratório: "+colab.lab,     font=["Verdana", 13]).place(x=600, y=340)
 		label_func = Label(tela_perfil, bg="white", text="Função: "+colab.funcao, font=["Verdana", 13]).place(x=600, y=380)
-		bt_confirma = Button(tela_perfil, bg="white", text = "Confirmar", width = 15, command = partial(pre_tela_principal, tela_perfil)).place(x=600, y=420)
 		os.remove("temp.png")
 
-		
+			
 	except Exception as e:
-		return False
+		pass
+	
+	tela_perfil.after(3000, lambda: pre_tela_principal(tela_perfil))
 
-def chamar_perfil_saida(cpf):
-
+def chamar_perfil_saida(cpf, tela_anterior):
+	tela_anterior.destroy()
 	try:
 		colab = retorna_user(cpf)
 
@@ -257,7 +211,6 @@ def chamar_perfil_saida(cpf):
 		tela_perfil.attributes('-fullscreen', True)
 		tela_perfil["bg"] = "white"
 		tela_perfil.title("Perfil do colaborador")
-		#tela_perfil.overridedirect(1)
 
 		maxwidth = 150
 		maxheight = 200
@@ -281,12 +234,12 @@ def chamar_perfil_saida(cpf):
 		label_nome = Label(tela_perfil, bg="white", text="Nome: "+colab.nome,   font=["Verdana", 13]).place(x=600, y=300)
 		label_lab = Label(tela_perfil, bg="white", text="Laboratório: "+colab.lab,     font=["Verdana", 13]).place(x=600, y=340)
 		label_func = Label(tela_perfil, bg="white", text="Função: "+colab.funcao, font=["Verdana", 13]).place(x=600, y=380)
-		bt_confirma = Button(tela_perfil, bg="white", text = "Confirmar", width = 15, command = partial(pre_tela_principal, tela_perfil)).place(x=600, y=420)
 		os.remove("temp.png")
 
 		
 	except Exception as e:
-		return False
+		pass
+	tela_perfil.after(3000, lambda: pre_tela_principal(tela_perfil))
 	
 
 def cadastrar_digital(login, senha, tela_anterior, event=None):
@@ -318,7 +271,7 @@ def cadastrar_digital_2(tela_anterior, login):
 	tela_login.title("Sistema de Controle de Frequência") 
 	
 	#Logo
-	imagem = PhotoImage(file="imagens/hub2.png")
+	imagem = PhotoImage(file=r"\\LSEHOST\Documents\SCF\imagens\hub2.png")
 	lb_image = Label(tela_login, image = imagem, bg="white")
 	lb_image.image = imagem
 	lb_image.pack(pady=110)
@@ -328,9 +281,6 @@ def cadastrar_digital_2(tela_anterior, login):
 	bt_voltar = Button(tela_login, width=10, text="Voltar", bg="white", command=partial(pre_tela_principal, tela_login)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 	lb = Label(tela_login, font=['TkDefaultFont', 10], text="*Aperte o botão \'Inserir Digital\'\nEm seguida, insira sua digital enquanto \no led verde estiver ligado\nRetire quando o led vermelho ligar\nInsira novamente quando o led verde ligar", bg="white").pack(side=TOP, pady=20)
 
-
-
-
 def chamar_tela_login(tela_anterior):
 	tela_anterior.destroy()
 	tela_login = Tk()
@@ -339,7 +289,7 @@ def chamar_tela_login(tela_anterior):
 	tela_login.title("Sistema de Controle de Frequência") #título da janela
 
 	#Logo
-	imagem = PhotoImage(file="imagens/hub2.png")
+	imagem = PhotoImage(file=r"\\LSEHOST\Documents\SCF\imagens\hub2.png")
 	lb_image = Label(tela_login, image = imagem, bg="white")
 	lb_image.image = imagem
 	lb_image.pack(pady=110)
@@ -359,27 +309,7 @@ def chamar_tela_login(tela_anterior):
 
 def pre_tela_principal(tela_anterior):
 	tela_anterior.destroy()
-	chamar_tela_principal() 
-
-def chamar_tela_principal():
-	tela_login = Tk()
-	tela_login["bg"]="white"
-	tela_login.attributes('-fullscreen', True) #dimensoes da janela --> Largura x Altura + DistanciaDaMargemEsquerda + DistanciaDaMargemSuperior
-	tela_login.title("Sistema de Controle de Frequência") #título da janela
-
-	imagem = PhotoImage(file="imagens/hub2.png")
-	lb_image = Label(tela_login, image = imagem, bg="white")
-	lb_image.image = imagem
-	lb_image.pack(pady=110)
-	
-	bt_iniciar = Button(tela_login, text="Inserir Digital", width=15, command=partial(validar_digital,tela_login), bg ="white")
-	bt_iniciar.pack(pady=2)
-
-	bt_cadastrar = Button(tela_login, text="Primeiro acesso", width=15, command=partial(chamar_tela_login, tela_login), bg ="white")
-	bt_cadastrar.pack(pady=2)
-
-	
-	tela_login.mainloop()
+	main() 
 
 def pop_up(title, label):
 	pop_up = Tk()
@@ -389,8 +319,59 @@ def pop_up(title, label):
 	pop_up.resizable(0,0)
 	lb = Label (pop_up, text=label, bg="white").pack(pady=20)
 	
+class Controlador(Tk):
+	def __init__(self, *args, **kwargs):
+		Tk.__init__(self, *args, **kwargs)
+		self["bg"]="white"
+		self.attributes('-fullscreen', True) #dimensoes da janela --> Largura x Altura + DistanciaDaMargemEsquerda + DistanciaDaMargemSuperior
+		self.title("Sistema de Controle de Frequência") #título da janela
+
+		self.imagem = PhotoImage(file=r"\\LSEHOST\Documents\SCF\imagens\hub2.png")
+		self.lb_image = Label(self, image = self.imagem, bg="white")
+		self.lb_image.image = self.imagem
+		self.lb_image.pack(pady=110)		
+
+
+		self.bt_cadastrar = Button(self, text="Primeiro acesso", width=15, command=partial(chamar_tela_login, self), bg ="white")
+		self.bt_cadastrar.pack(pady=2)		
+		self.update_label()
+
+	def update_label(self):
+		if conexao.inWaiting()>0:
+			self.idDigital = int(conexao.readline())
+			if int(conexao.readline())>90:	
+				try:
+					cursor = con.cursor
+					cursor.execute("SELECT cpf FROM Digital WHERE idDigital='%d'"%self.idDigital)
+					cpf = str(cursor.fetchall()[0][0])
+					marcar_frequencia(self.idDigital)
+					
+					cursor = con.cursor
+					cursor.execute("SELECT cpf FROM Digital WHERE idDigital='%d'"%self.idDigital)
+					cpf = str(cursor.fetchall()[0][0])
+					cursor.execute("SELECT count(cpf) FROM Frequencia  WHERE cpf='%s' and saida IS NULL"%cpf)
+					num = cursor.fetchall()[0][0]
+
+					if num==0:
+						chamar_perfil_saida(cpf, self)
+						conexao.reset_input_buffer()
+			
+					elif num==1:
+						chamar_perfil_entrada(cpf, self)
+						conexao.reset_input_buffer()
+
+				except Exception as e:
+					print(e)
+		self.after(1000, self.update_label)
+
+
+
+def main():
+	controle = Controlador()
+	controle.mainloop()
+
 
 
 if linha == b'1\r\n':
-	chamar_tela_principal()
+	main()
 	conexao.close()

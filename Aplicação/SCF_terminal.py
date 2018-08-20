@@ -354,11 +354,10 @@ class Controlador(Tk):
 
 					if num==0:
 						chamar_perfil_saida(cpf, self)
-						conexao.reset_input_buffer()
 			
 					elif num==1:
 						chamar_perfil_entrada(cpf, self)
-						conexao.reset_input_buffer()
+						
 
 				except Exception as e:
 					print(e)
@@ -367,9 +366,9 @@ class Controlador(Tk):
 
 
 def main():
+	conexao.reset_input_buffer()
 	controle = Controlador()
 	controle.mainloop()
-
 
 
 if linha == b'1\r\n':

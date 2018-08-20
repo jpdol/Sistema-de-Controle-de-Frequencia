@@ -1,4 +1,4 @@
-﻿from tkinter import *
+from tkinter import *
 from tkinter import ttk
 from tkinter.filedialog import askopenfilename
 import datetime
@@ -7,19 +7,28 @@ import SCF_interface as inter
 import sqlite3
 import tkinter.font as tkFont
 import tkinter.ttk as ttk
-
  
-user = None
 
 def criar_conexao():
 	global con
 	con = Conexao()
 
+class Colaborador():
+	def __init__(self, nome="", dtNasc="", lab="", funcao="", ch="", dtIngresso="", status="", cpf="", senha=""):
+		self.nome = nome
+		self.dtNasc = dtNasc
+		self.lab = lab
+		self.funcao = funcao
+		self.ch = ch
+		self.dtIngresso = dtIngresso
+		self.status = status
+		self.cpf = cpf
+		self.senha = senha
 
 class Conexao():
 	def __init__(self):
 		self.path = r"DataBase"
-		self.conexao = sqlite3.connect(self.path + r"\SCF.db")
+		self.conexao = sqlite3.connect(self.path + r"SCF.db")
 		self.cursor = self.conexao.cursor()
 		self.cursor.execute("CREATE TABLE IF NOT EXISTS Laboratorio (Nome VARCHAR(45), Sigla VARCHAR(45), Logo BLOB, Image_type VARCHAR(3), PRIMARY KEY(Nome, Sigla))")
 		self.cursor.execute("CREATE TABLE IF NOT EXISTS Colaborador (Nome VARCHAR(45), DtNasc DATE, Lab VARCHAR(45), Funcao VARCHAR(45), CH INT, DtIngresso DATE, DtDesligamento DATE, Status VARCHAR(45), cpf VARCHAR(11), Foto BLOB, Image_type VARCHAR(3), Senha VARCHAR(45) NOT NULL, PRIMARY KEY(cpf))")
@@ -27,7 +36,7 @@ class Conexao():
 		self.conexao.commit()
 
 
-def cadastrar_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH, DtIngresso, status, cpf, senha, confirma_senha, foto, event=None):
+def cadastrar_colaborador(nome, DtNasc, Lab, Funcao, CH, DtIngresso, status, cpf, senha, confirma_senha, foto, event=None):
 	if senha.get() != confirma_senha.get():
 		inter.pop_up("ERROR", "Confirme sua Senha!")
 	elif(not(validar_cpf(cpf.get()))):
@@ -53,22 +62,18 @@ def cadastrar_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH, DtIngres
 					cursor.execute("INSERT INTO Colaborador (Nome, DtNasc, Lab, Funcao, CH, DtIngresso, Status, cpf, Foto, Image_type, Senha) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (nome.get(), DtNasc.get(), lab, Funcao.get(), CH.get(), DtIngresso.get(), status.get(), cpf.get(), file_binary, file_type, senha.get()))
 				else:
 					cursor.execute("INSERT INTO Colaborador (Nome, DtNasc, Lab, Funcao, CH, DtIngresso, Status, cpf, Foto, Image_type, Senha) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (nome.get(), DtNasc.get(), lab, Funcao.get(), CH.get(), DtIngresso.get(), status.get(), cpf.get(), None, None, senha.get()))
+				conexao.commit()
+				inter.pop_up("SUCCESSFUL", "Cadastro Realizado com Sucesso")
+				return True
 			else:
 				inter.pop_up("ERROR", "Cadastro Inválido!")
-				return False
-
-			if(Funcao.get() in ['ADM', 'Coordenador Geral']):
-				inter.pop_up("Atenção", "Usuário cadastrado no laboratório \"Administração\"")
-			else:
-				pass
-			inter.pop_up("SUCCESSFUL", "Cadastro Realizado com Sucesso")
-			inter.chamar_tela_cadastro_colaborador(tela_anterior)
-		except Exception as e:
-			print(e)
+				return False	
+		except Exception:
 			inter.pop_up("ERROR", "Cadastro Inválido")
-		conexao.commit()
+			return False
+	return False
 
-def atualizar_cadastro_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH, DtIngresso, status, senha, confirma_senha, foto, nome_colab, cpf_colab, event=None):
+def atualizar_cadastro_colaborador(nome, DtNasc, Lab, Funcao, CH, DtIngresso, status, senha, confirma_senha, foto, cpf_colab):
 	if senha.get()!=confirma_senha.get():
 		inter.pop_up("ERROR", "Confirme sua Senha!")
 	else:
@@ -87,9 +92,12 @@ def atualizar_cadastro_colaborador(tela_anterior, nome, DtNasc, Lab, Funcao, CH,
 			inter.pop_up("SUCCESSFUL", "Cadastro Atualizado com Sucesso")
 		except:
 			inter.pop_up("ERROR", "Cadastro Inválido")
+			return False
 		conexao.commit()
+		return True
+	return False
 
-def atualizar_cadastro_laboratorio(tela_anterior, nome, sigla, logo_path, event=None):
+def atualizar_cadastro_laboratorio(nome, sigla, logo_path):
 	if logo_path.get() != "":
 		cursor = con.cursor
 		conexao = con.conexao
@@ -101,16 +109,16 @@ def atualizar_cadastro_laboratorio(tela_anterior, nome, sigla, logo_path, event=
 			conexao.commit()
 
 			inter.pop_up("Sucesso", "Dados Atualizados")
-
-			inter.chamar_tela_consulta_2(tela_anterior, nome.get())
+			return True
 
 		except Exception as e:
+			print(e)
 			inter.pop_up("ERROR", "O caminho informado é inválido")
+			return False
 	else:
 		return False
 
-
-def cadastrar_laboratorio(tela_anterior, nome, sigla, logo, event=None):
+def cadastrar_laboratorio(nome, sigla, logo):
 	cursor = con.cursor
 	conexao = con.conexao
 	if nome.get() != "" and sigla.get()!="":
@@ -123,12 +131,13 @@ def cadastrar_laboratorio(tela_anterior, nome, sigla, logo, event=None):
 				cursor.execute("INSERT INTO Laboratorio VALUES (?, ?, ?, ?)", (nome.get(), sigla.get(), None, None))
 
 			inter.pop_up("SUCCESSFUL", "Cadastro Realizado com Sucesso")
-			inter.chamar_tela_cadastro_laboratorio(tela_anterior)
+			conexao.commit()
+			return True
 		except:
 			inter.pop_up("ERROR", "Cadastro Inválido")
-		conexao.commit()
 	else:
 		inter.pop_up("ERROR", "Cadastro Inválido")
+	return False
 
 def retorna_lista_lab():
 	cursor = con.cursor
@@ -155,18 +164,6 @@ def retorna_dados_lab(lab):
 	except:
 		pop_up("ERROR", "Laboratorio não encontrado!")
 
-class Colaborador():
-	def __init__(self, nome, dtNasc, lab, funcao, ch, dtIngresso, status, cpf, senha):
-		self.nome = nome
-		self.dtNasc = dtNasc
-		self.lab = lab
-		self.funcao = funcao
-		self.ch = ch
-		self.dtIngresso = dtIngresso
-		self.status = status
-		self.cpf = cpf
-		self.senha = senha
-
 def retorna_colab(nome, lab):
 	cursor = con.cursor
 	cursor.execute("SELECT * FROM Colaborador WHERE Nome = '%s' and Lab='%s'"%(nome.get(), lab))
@@ -189,7 +186,6 @@ def retorna_objeto_date(data):
 	hora = data_hora[1].split(":")
 	date = datetime(int(data[0]),int(data[1]),int(data[2]), int(hora[0]),int(hora[1]),int(hora[2]))
 	return date
-
 
 class ImageMethods():
 	@staticmethod
@@ -252,8 +248,7 @@ def validar_data(data):
 		print(e)
 		return False
 
-
-def validar_chamada_historico(tela_anterior, lab, mes, ano, tipo, event=None):
+def validar_chamada_historico(lab, mes, ano, tipo):
 	laboratorio, mes, ano = lab.get(), mes.get(), ano.get()
 	if laboratorio != "*Selecione o laboratório*":
 		try:
@@ -286,41 +281,37 @@ def validar_chamada_historico(tela_anterior, lab, mes, ano, tipo, event=None):
 						tupla = (colab[1], frequencia[0],frequencia[1])
 						lista_tuplas.append(tupla)
 					
-			inter.chamar_historico_2(tela_anterior, lista_tuplas, lab, mes, ano, tipo)
+			return lista_tuplas
 		except Exception as e:
-			print(e)
-			pass
+			return False
 
 	else:
 		inter.pop_up("ERROR", "Laboratorio inválido!")
-		pass
+		return False
 
-
-def validar_login(tela_anterior, login, senha, event=None):
+def validar_login(login, senha, event=None):
 	
 	if (login.get() != "") and (senha.get() != ""):
 		try:
 			colab = retorna_user(login.get())
 
 			if (colab.senha == senha.get()) and (colab.status == "Ativo") and (colab.funcao != "Pesquisador"):
-				atualizar_user(colab)
-				inter.chamar_tela_inicial(tela_anterior)
+				return colab
 
 			else:
 				inter.pop_up("ERROR", "Login ou Senha Inválida")
+				return None
 
 		except Exception as e:
 			inter.pop_up("ERROR", "Login ou Senha Inválida")
+			return None
 
 	else:
 		inter.pop_up("ERROR", "Login ou Senha Inválida")
-
-def atualizar_user(colab):
-	global user
-	user = colab
+		return None
 
 
-def excluir_colaborador(tela_anterior, cpf, lab):
+def excluir_colaborador(cpf, lab):
 	
 	if user.cpf != cpf:
 
@@ -348,16 +339,18 @@ def excluir_colaborador(tela_anterior, cpf, lab):
 			else:
 				cursor.execute("DELETE FROM Colaborador WHERE cpf= '%s'"%cpf)
 				con.conexao.commit()
+			inter.pop_up("SUCCESSFUL", "Usuário removido com sucessso.")
 
-			inter.chamar_tela_consulta_2(tela_anterior, lab)
+			return True
 		except:
 			inter.pop_up("ERROR", "Não foi possível remover o colaborador.")
+			return False
 		
 	else:
 		inter.pop_up("ERROR", "Não é permitido excluir o próprio usuário.")
+		return False
 
-
-def excluir_lab(tela_anterior, nome, sigla):
+def excluir_lab(nome, sigla):
 	lista_colab = retorna_lista_colab(nome)
 	if len(lista_colab) == 0:
 		try:
@@ -365,52 +358,46 @@ def excluir_lab(tela_anterior, nome, sigla):
 			cursor.execute("DELETE FROM Laboratorio WHERE Nome = '%s'"%nome)
 			con.conexao.commit()
 			inter.pop_up("Sucesso", "Laboratório excluido com sucesso")
-			inter.chamar_tela_consulta(tela_anterior)
+			return True
 		except:
 			inter.pop_up("ERROR", "Não foi possível deletar o laboratório")
 	else:
 		inter.pop_up("Error", "O laboratório deve estar vazio para ser excluido")
 		return False
-	
-
-def deslogar(tela_anterior):
-	tela_anterior.destroy()
-	inter.chamar_tela_login()
-	atualizar_user(None)
-
-	
-def validar_consulta(tela_anterior, lab, event=None):
+		
+def validar_consulta(lab):
 	if lab.get() != "" and lab.get() != "*Selecione o laboratório*":
-		inter.chamar_tela_consulta_2(tela_anterior, lab.get())
+		return True
 	else:
-		inter.pop_up("ERROR", "Consulta Inválida1")
+		inter.pop_up("ERROR", "Consulta Inválida")
+		return False
 
-def validar_consulta_2(tela_anterior, nome_colab, lab, event=None):
+def validar_consulta_2(nome_colab, lab):
 	try:
 		colab = retorna_colab(nome_colab, lab)
-		inter.chamar_tela_dados_colaborador(tela_anterior, nome_colab, lab)
-	except Exception as e:
-		print(e)
+		return True
+	except:
 		inter.pop_up("ERROR", "Consulta Inválida")
+		return False
 
 class McListBox(object):
-	def __init__(self, header, lista):
+	def __init__(self, container_o, header, lista):
 		self.tree = None
-		self._setup_widgets(header)
+		self._setup_widgets(container_o, header)
 		self._build_tree(header, lista)
 
-	def _setup_widgets(self, header):
-		container = ttk.Frame()
-		container.pack(fill='both', expand=True)
+	def _setup_widgets(self,container_o, header):
+		self.container = ttk.Frame(container_o)
+		self.container.pack(fill='both', expand=True)
 		self.tree = ttk.Treeview(columns=header, show="headings")
 		vsb = ttk.Scrollbar(orient="vertical", command=self.tree.yview)
 		hsb = ttk.Scrollbar(orient="horizontal", command=self.tree.xview)
 		self.tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
-		self.tree.grid(column=0, row=0, sticky='nsew', in_=container)
-		vsb.grid(column=1, row=0, sticky='ns', in_=container)
-		hsb.grid(column=0, row=1, sticky='ew', in_=container)
-		container.grid_columnconfigure(0, weight=1)
-		container.grid_rowconfigure(0, weight=1)
+		self.tree.grid(column=0, row=0, sticky='nsew', in_=self.container)
+		vsb.grid(column=1, row=0, sticky='ns', in_=self.container)
+		hsb.grid(column=0, row=1, sticky='ew', in_=self.container)
+		self.container.grid_columnconfigure(0, weight=1)
+		self.container.grid_rowconfigure(0, weight=1)
 	def _build_tree(self, header, lista):
 		for col in header:
 			self.tree.heading(col, text=col.title(), command=lambda c=col: sortby(self.tree, c, 0))
@@ -421,7 +408,6 @@ class McListBox(object):
 				col_w = tkFont.Font().measure(val)
 				if self.tree.column(header[ix],width=None)<col_w:
 					self.tree.column(header[ix], width=col_w)
-
 
 def sortby(tree, col, descending):
 	data = [(tree.set(child, col), child) \

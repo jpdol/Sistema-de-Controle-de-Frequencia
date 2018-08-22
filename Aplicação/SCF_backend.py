@@ -7,7 +7,6 @@ import SCF_interface as inter
 import sqlite3
 import tkinter.font as tkFont
 import tkinter.ttk as ttk
- 
 
 def criar_conexao():
 	global con
@@ -62,7 +61,6 @@ def cadastrar_colaborador(nome, DtNasc, Lab, Funcao, CH, DtIngresso, status, cpf
 				else:
 					cursor.execute("INSERT INTO Colaborador (Nome, DtNasc, Lab, Funcao, CH, DtIngresso, Status, cpf, Foto, Image_type, Senha) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (nome.get(), DtNasc.get(), lab, Funcao.get(), CH.get(), DtIngresso.get(), status.get(), cpf.get(), None, None, senha.get()))
 				conexao.commit()
-				inter.pop_up("SUCCESSFUL", "Cadastro Realizado com Sucesso")
 				return True
 			else:
 				inter.pop_up("ERROR", "Cadastro Inválido!")
@@ -129,7 +127,6 @@ def cadastrar_laboratorio(nome, sigla, logo):
 			else:
 				cursor.execute("INSERT INTO Laboratorio VALUES (?, ?, ?, ?)", (nome.get(), sigla.get(), None, None))
 
-			inter.pop_up("SUCCESSFUL", "Cadastro Realizado com Sucesso")
 			conexao.commit()
 			return True
 		except:
@@ -311,43 +308,35 @@ def validar_login(login, senha, event=None):
 
 
 def excluir_colaborador(cpf, lab):
-	
-	if user.cpf != cpf:
+	try:
+		cursor = con.cursor
 
-		try:
-			cursor = con.cursor
+		cursor.execute("SELECT idDigital FROM Digital WHERE cpf='%s'"%cpf)
 
-			cursor.execute("SELECT idDigital FROM Digital WHERE cpf='%s'"%cpf)
+		idDigital = cursor.fetchone()
 
-			idDigital = cursor.fetchone()
+		if idDigital != None:
+			idDigital = idDigital[0]
 
-			if idDigital != None:
-				idDigital = idDigital[0]
+			cursor.execute("DELETE FROM Digital WHERE cpf= '%s'"%cpf)
 
-				cursor.execute("DELETE FROM Digital WHERE cpf= '%s'"%cpf)
+			cursor.execute("DELETE FROM Colaborador WHERE cpf= '%s'"%cpf)
 
-				cursor.execute("DELETE FROM Colaborador WHERE cpf= '%s'"%cpf)
+			try:
+				cursor.execute('''UPDATE IdDisponivel SET disponivel = (?) WHERE idDigital = (?)''', (0, idDigital))
+			except:
+				pass
 
-				try:
-					cursor.execute('''UPDATE IdDisponivel SET disponivel = (?) WHERE idDigital = (?)''', (0, idDigital))
-				except:
-					pass
+			con.conexao.commit()
 
-				con.conexao.commit()
-
-			else:
-				cursor.execute("DELETE FROM Colaborador WHERE cpf= '%s'"%cpf)
-				con.conexao.commit()
-			inter.pop_up("SUCCESSFUL", "Usuário removido com sucessso.")
-
-			return True
-		except:
-			inter.pop_up("ERROR", "Não foi possível remover o colaborador.")
-			return False
-		
-	else:
-		inter.pop_up("ERROR", "Não é permitido excluir o próprio usuário.")
+		else:
+			cursor.execute("DELETE FROM Colaborador WHERE cpf= '%s'"%cpf)
+			con.conexao.commit()
+		return True
+	except:
+		inter.pop_up("ERROR", "Não foi possível remover o colaborador.")
 		return False
+
 
 def excluir_lab(nome, sigla):
 	lista_colab = retorna_lista_colab(nome)
@@ -356,7 +345,6 @@ def excluir_lab(nome, sigla):
 			cursor = con.cursor
 			cursor.execute("DELETE FROM Laboratorio WHERE Nome = '%s'"%nome)
 			con.conexao.commit()
-			inter.pop_up("Sucesso", "Laboratório excluido com sucesso")
 			return True
 		except:
 			inter.pop_up("ERROR", "Não foi possível deletar o laboratório")
@@ -410,9 +398,9 @@ class McListBox(object):
 
 def sortby(tree, col, descending):
 	data = [(tree.set(child, col), child) \
-	    for child in tree.get_children('')]
+		for child in tree.get_children('')]
 	data.sort(reverse=descending)
 	for ix, item in enumerate(data):
-	    tree.move(item[1], '', ix)
+		tree.move(item[1], '', ix)
 	tree.heading(col, command=lambda col=col: sortby(tree, col, \
-	    int(not descending)))
+		int(not descending)))

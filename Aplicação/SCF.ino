@@ -206,13 +206,14 @@ uint8_t getFingerprintEnroll() {
 }
 
 
-void loop()                     // run over and over again
+void loop()
 {
   char entrada;
 
   entrada = Serial.read();
   if (entrada == 'e'){
     enroll();
+    delay(2500);
   }else{
     getFingerprintIDez();
     

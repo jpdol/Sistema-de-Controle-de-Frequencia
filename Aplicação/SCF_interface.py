@@ -734,7 +734,7 @@ class TelaConsultaHistorico(tk.Frame):
 			self.voltar = lambda:self.controller.mostrar_frame(TelaInicialAdm)
 		else:
 			self.voltar = lambda:self.controller.mostrar_frame(TelaInicialGestor)
-		lista_lab = retorna_lista_lab()
+		lista_lab = retorna_lista_lab() + ['Não Ativos']
 		lista_lab.insert(0,"*Selecione o laboratório*")
 
 		self.entrada_lab['values'] = lista_lab

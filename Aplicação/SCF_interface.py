@@ -231,7 +231,7 @@ class TelaCadastroColaborador(tk.Frame):
 		#Status
 		lb_status = Label(self, text="Status:", bg="white")
 		lb_status.place(x=dis_x, y=dis_y_inicial+300)
-		lista_status = ['Ativo', 'Não Ativo', 'Afastado']
+		lista_status = ['Ativo', 'Afastado']
 		entrada_status = ttk.Combobox(self, width=37, state="readonly")
 		entrada_status.place(x=dis_x, y=dis_y_inicial+320)	
 		entrada_status['values'] = lista_status
@@ -308,7 +308,8 @@ class TelaCadastroColaborador(tk.Frame):
 					entrada_func, entrada_CH, entrada_dt_ing, entrada_status, entrada_cpf,
 					entrada_senha, entrada_confirma_senha, entrada_foto)
 		if cadastrado:
-			self.voltar()
+			self.controller.mostrar_frame(TelaCadastro)
+			pop_up("SUCCESSFUL", "Cadastro Realizado com Sucesso")
 		else:
 			pass
 
@@ -364,7 +365,7 @@ class TelaCadastroLaboratorio(tk.Frame):
 	def cadastrar(self, entrada_nome, entrada_sigla, entrada_logo, event=None):
 		cadastrado = cadastrar_laboratorio(entrada_nome, entrada_sigla, entrada_logo)
 		if cadastrado:
-			self.controller.mostrar_frame(TelaCadastro)
+			inter.pop_up("SUCCESSFUL", "Cadastro Realizado com Sucesso")
 		else:
 			pass
 
@@ -584,7 +585,7 @@ class TelaDadosColaborador(tk.Frame):
 			self.entrada_func['values'] = lista_func
 			self.entrada_func.current(lista_func.index(self.colab.funcao))
 
-		lista_status = ['Ativo', 'Não Ativo', 'Afastado']
+		lista_status = ['Ativo', 'Afastado']
 		self.entrada_status['values'] = lista_status
 		self.nome.set(self.colab.nome)
 		self.ch.set(self.colab.ch)
@@ -593,18 +594,22 @@ class TelaDadosColaborador(tk.Frame):
 		self.dt_ent.set(self.colab.dtIngresso)
 		self.senha.set(self.colab.senha)
 		self.confirmar_senha.set(self.colab.senha)
-		lista_status = ['Ativo', 'Não Ativo', 'Afastado']
+		lista_status = ['Ativo', 'Afastado']
 		self.entrada_status.current(lista_status.index(self.colab.status))
 
 	def setColab(self, colab):
 		self.colab = colab
 
 	def remover_colab(self):
-		excluiu = excluir_colaborador(self.colab.cpf, self.colab.lab)
-		if excluiu:
-			self.controller.mostrar_frame(TelaConsulta2)
+		if self.colab.cpf != self.controller.user.cpf:
+			excluiu = excluir_colaborador(self.colab.cpf, self.colab.lab)
+			if excluiu:
+				self.controller.mostrar_frame(TelaConsulta2)
+				pop_up("SUCCESSFUL", "Usuário removido com sucessso.")
+			else:
+				pass
 		else:
-			pass
+			inter.pop_up("ERROR", "Não é permitido excluir o próprio usuário.")
 
 	def atualizar_colab(self, entrada_nome, entrada_dt_nasc,entrada_lab, entrada_func, entrada_CH, entrada_dt_ing, entrada_status,
 		entrada_senha, entrada_confirma_senha, entrada_foto, cpf, event=None):
@@ -673,6 +678,7 @@ class TelaDadosLaboratorio(tk.Frame):
 		excluido = excluir_lab(self.lab[0], self.lab[1])
 		if excluido:
 			self.controller.mostrar_frame(TelaConsulta)
+			inter.pop_up("Sucesso", "Laboratório excluido com sucesso")
 		else:
 			pass
 
@@ -800,8 +806,3 @@ def pop_up(title, label):
 	pop_up.resizable(0,0)
 	lb = Label (pop_up, text=label, bg="white").pack(pady=20)
 	pop_up.mainloop()
-
-
-
-
-

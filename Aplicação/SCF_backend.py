@@ -207,6 +207,24 @@ class ImageMethods():
 			file_type = file_type + image_path[i]
 		return  (file_type)
 
+def retorna_data():
+	now = datetime.now()
+	
+	dia = str(now.day)
+	if len(dia)<2:
+		dia = '0'+dia
+	
+	mes = str(now.month)
+	if len(mes)<2:
+		mes = '0'+mes
+	
+	ano = str(now.year)
+	
+	data = ano+'/'+mes+'/'+dia
+	
+	return data
+
+
 def validar_cpf(cpf):
 	try:
 		if cpf.isnumeric() and (len(cpf) == 11):
@@ -310,19 +328,21 @@ def validar_login(login, senha, event=None):
 def excluir_colaborador(cpf, lab):
 	try:
 		cursor = con.cursor
-
+		#Seleciona idDigital
 		cursor.execute("SELECT idDigital FROM Digital WHERE cpf='%s'"%cpf)
 
 		idDigital = cursor.fetchone()
 
 		if idDigital != None:
 			idDigital = idDigital[0]
-
+			#Apaga digital do banco
 			cursor.execute("DELETE FROM Digital WHERE cpf= '%s'"%cpf)
-
-			cursor.execute("DELETE FROM Colaborador WHERE cpf= '%s'"%cpf)
-
+			#Desativa o Colaborador
+			cursor.execute("UPDATE Colaborador SET Status = (?) WHERE cpf = (?)", ("Não Ativo", cpf))
+			#Setta data de Desligamento 
+			cursor.execute("UPDATE Colaborador SET DtDesligamento = (?) WHERE cpf = (?)", (retorna_data(), cpf))
 			try:
+				#Disponibiliza id do colaborador apagado
 				cursor.execute('''UPDATE IdDisponivel SET disponivel = (?) WHERE idDigital = (?)''', (0, idDigital))
 			except:
 				pass
@@ -330,10 +350,12 @@ def excluir_colaborador(cpf, lab):
 			con.conexao.commit()
 
 		else:
-			cursor.execute("DELETE FROM Colaborador WHERE cpf= '%s'"%cpf)
+			#Desativa o Colaborador
+			cursor.execute("UPDATE Colaborador SET Status = 'Não Ativo' WHERE cpf = (?)", (cpf))
 			con.conexao.commit()
 		return True
-	except:
+	except Exception as e:
+		print (e)
 		inter.pop_up("ERROR", "Não foi possível remover o colaborador.")
 		return False
 
@@ -347,9 +369,9 @@ def excluir_lab(nome, sigla):
 			con.conexao.commit()
 			return True
 		except:
-			inter.pop_up("ERROR", "Não foi possível deletar o laboratório")
+			inter.pop_up("ERROR", "Não foi possível remover o laboratório")
 	else:
-		inter.pop_up("Error", "O laboratório deve estar vazio para ser excluido")
+		inter.pop_up("Error", "O laboratório deve estar vazio para ser removido")
 		return False
 		
 def validar_consulta(lab):

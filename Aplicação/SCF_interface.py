@@ -56,7 +56,7 @@ class SCFapp(tk.Tk):
 				frame.tkraise()
 
 		except Exception as e:
-			print(e)
+			pass
 
 	def setUser(self, user):
 		self.user = user
@@ -617,6 +617,7 @@ class TelaDadosColaborador(tk.Frame):
 		entrada_senha, entrada_confirma_senha, entrada_foto, cpf)
 
 		if atualizou:
+			pop_up("SUCCESSFUL", "Cadastro Atualizado com Sucesso")
 			self.controller.mostrar_frame(TelaConsulta2)
 		else:
 			pass
@@ -805,4 +806,6 @@ def pop_up(title, label):
 	pop_up.title(title) 
 	pop_up.resizable(0,0)
 	lb = Label (pop_up, text=label, bg="white").pack(pady=20)
+	pop_up.focus_force()
+	pop_up.bind('<Return>', lambda event:pop_up.destroy())
 	pop_up.mainloop()

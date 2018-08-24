@@ -86,12 +86,11 @@ def atualizar_cadastro_colaborador(nome, DtNasc, Lab, Funcao, CH, DtIngresso, st
 			else:
 				cursor.execute('''UPDATE Colaborador 
 					SET Nome=(?), DtNasc=(?), Lab=(?), Funcao=(?), CH=(?), DtIngresso=(?), Status=(?), Senha=(?) WHERE cpf = (?) ''', (nome.get(), DtNasc.get(), Lab.get(), Funcao.get(), CH.get(), DtIngresso.get(), status.get(), senha.get(), cpf_colab))
-			inter.pop_up("SUCCESSFUL", "Cadastro Atualizado com Sucesso")
+			conexao.commit()
+			return True
 		except:
 			inter.pop_up("ERROR", "Cadastro Inválido")
 			return False
-		conexao.commit()
-		return True
 	return False
 
 def atualizar_cadastro_laboratorio(nome, sigla, logo_path):

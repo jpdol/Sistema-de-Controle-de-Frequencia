@@ -270,11 +270,16 @@ def validar_chamada_historico(lab, mes, ano, tipo):
 						'Julho': '07','Agosto': '08','Setembro': '09','Outubro': '10','Novembro': '11','Dezembro': '12'}
 
 			date = ano+"/"+dict_mes[mes]
-
-			cursor.execute("SELECT cpf,Nome From Colaborador WHERE Lab = '%s'"%laboratorio)
+			if laboratorio == "Não Ativos":
+				cursor.execute("SELECT cpf,Nome From Colaborador WHERE Status = 'Afastado'")
+			else:
+				cursor.execute("SELECT cpf,Nome From Colaborador WHERE Lab = '%s'"%laboratorio)
 
 			lista_tuplas = []
 			cpf_nome_colab = cursor.fetchall()
+			if len(cpf_nome_colab) == 0:
+				inter.pop_up("Atenção", "Não há membros neste laboratório")
+				return False
 	
 			if tipo=='r':
 				for colab in cpf_nome_colab:

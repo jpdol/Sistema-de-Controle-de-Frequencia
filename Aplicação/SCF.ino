@@ -4,8 +4,8 @@ SoftwareSerial mySerial(2, 3);
 
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 uint8_t id;
-int green = 8;
-int red = 9;
+int green = 9;
+int red = 8;
    
 void setup()  
 {

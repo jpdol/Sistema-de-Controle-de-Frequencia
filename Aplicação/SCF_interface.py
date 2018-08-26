@@ -747,13 +747,14 @@ class TelaConsultaHistorico(tk.Frame):
 			tupla_tela_hist = (lista_tuplas, lab.get(), ano.get(),mes.get(), tipo)
 			self.controller.mostrar_frame(TelaHistorico, tupla_tela_hist)
 		else:
+			pop_up("Atenção", "Não há frequências na data selecionada.")
 			pass
 
 
 class TelaHistorico(tk.Frame):
 
 	def __init__(self, parent, controller):
-		self.tamanho = "500x600"
+		self.tamanho = "550x600"
 
 		self.lab = ""
 		self.mes = ""

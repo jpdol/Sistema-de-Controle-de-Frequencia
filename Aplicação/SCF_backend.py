@@ -145,7 +145,7 @@ def retorna_lista_lab():
 
 def retorna_lista_colab(lab):
 	cursor = con.cursor
-	cursor.execute("SELECT Nome FROM Colaborador WHERE Lab = '%s'"%lab)
+	cursor.execute("SELECT Nome FROM Colaborador WHERE Lab = '%s' and Status='Ativo' "%lab)
 	lista = []
 	for nome in cursor.fetchall():
 		lista.append(str(nome[0]))
@@ -263,6 +263,7 @@ def validar_data(data):
 
 def validar_chamada_historico(lab, mes, ano, tipo):
 	laboratorio, mes, ano = lab.get(), mes.get(), ano.get()
+
 	if laboratorio != "*Selecione o laboratório*":
 		try:
 			cursor = con.cursor
@@ -270,17 +271,19 @@ def validar_chamada_historico(lab, mes, ano, tipo):
 						'Julho': '07','Agosto': '08','Setembro': '09','Outubro': '10','Novembro': '11','Dezembro': '12'}
 
 			date = ano+"/"+dict_mes[mes]
+
 			if laboratorio == "Não Ativos":
-				cursor.execute("SELECT cpf,Nome From Colaborador WHERE Status = 'Afastado'")
+				cursor.execute("SELECT cpf,Nome From Colaborador WHERE Status = 'Não Ativo'")
 			else:
-				cursor.execute("SELECT cpf,Nome From Colaborador WHERE Lab = '%s'"%laboratorio)
+				cursor.execute("SELECT cpf,Nome From Colaborador WHERE Lab = '%s' ORDER BY Nome"%laboratorio)
 
 			lista_tuplas = []
 			cpf_nome_colab = cursor.fetchall()
+
 			if len(cpf_nome_colab) == 0:
 				inter.pop_up("Atenção", "Não há membros neste laboratório")
 				return False
-	
+
 			if tipo=='r':
 				for colab in cpf_nome_colab:
 					counter = timedelta()
@@ -292,15 +295,35 @@ def validar_chamada_historico(lab, mes, ano, tipo):
 
 					tupla = (colab[1], str(counter))
 					lista_tuplas.append(tupla)
-			else:
-				for colab in cpf_nome_colab:
-					cursor.execute("SELECT entrada, saida FROM Frequencia WHERE entrada LIKE ? and cpf = ? and saida IS NOT NULL",((date+'%', colab[0])))
-					for frequencia in cursor.fetchall():
-						tupla = (colab[1], frequencia[0],frequencia[1])
-						lista_tuplas.append(tupla)
+
+			elif tipo=='d':
+				dias = ["01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20"
+				,"21","22","23","24","25","26","27","28","29","30","31"]
+				
+				for dia in dias:
+					data_com_dia = date+"/"+ dia
+					linha = dia+" de "+mes+" de "+ano
+					if laboratorio != "Não Ativos":
+						cursor.execute('''SELECT Nome, entrada, saida
+										  FROM Colaborador as C, Frequencia as F
+										  WHERE C.Lab = ? and C.cpf == F.cpf and F.entrada LIKE ? and F.saida IS NOT NULL 
+										  ORDER BY Nome''',(laboratorio, data_com_dia+"%"))
+					else:
+						cursor.execute('''SELECT Nome, entrada, saida
+										  FROM Colaborador as C, Frequencia as F
+										  WHERE C.cpf == F.cpf and C.Status = "Não Ativo" and F.entrada LIKE ? and F.saida IS NOT NULL 
+										  ORDER BY Nome''',(data_com_dia+"%",))
+					frequencias = cursor.fetchall()
 					
+					if frequencias:		
+						lista_tuplas.append(("__________________",linha,"__________________"))
+
+						for frequencia in frequencias:
+							tupla = (frequencia[0], frequencia[1],frequencia[2])
+							lista_tuplas.append(tupla)
+				
 			return lista_tuplas
-		except Exception as e:
+		except:
 			return False
 
 	else:
@@ -355,7 +378,7 @@ def excluir_colaborador(cpf, lab):
 
 		else:
 			#Desativa o Colaborador
-			cursor.execute("UPDATE Colaborador SET Status = 'Não Ativo' WHERE cpf = (?)", (cpf))
+			cursor.execute("UPDATE Colaborador SET Status = 'Não Ativo' WHERE cpf = (?)", (cpf,))
 			con.conexao.commit()
 		return True
 	except Exception as e:

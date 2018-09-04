@@ -145,7 +145,10 @@ def retorna_lista_lab():
 
 def retorna_lista_colab(lab):
 	cursor = con.cursor
-	cursor.execute("SELECT Nome FROM Colaborador WHERE Lab = '%s' and Status='Ativo' "%lab)
+	if lab == 'Não Ativos':
+		cursor.execute("SELECT Nome FROM Colaborador WHERE Status='Não Ativo'")
+	else:
+		cursor.execute("SELECT Nome FROM Colaborador WHERE Lab = '%s' and Status='Ativo' "%lab)
 	lista = []
 	for nome in cursor.fetchall():
 		lista.append(str(nome[0]))
@@ -161,11 +164,15 @@ def retorna_dados_lab(lab):
 
 def retorna_colab(nome, lab):
 	cursor = con.cursor
-	cursor.execute("SELECT * FROM Colaborador WHERE Nome = '%s' and Lab='%s'"%(nome.get(), lab))
+	if lab == 'Não Ativos':
+		cursor.execute("SELECT * FROM Colaborador WHERE Nome = '%s' and Status = 'Não Ativo'"%nome.get())
+	else:
+		cursor.execute("SELECT * FROM Colaborador WHERE Nome = '%s' and Lab='%s'"%(nome.get(), lab))
 	lista = cursor.fetchall()
 	tupla = lista[0]
 	colab = Colaborador(tupla[0], tupla[1], tupla[2], tupla[3], tupla[4], tupla[5], tupla[7], tupla[8], tupla[11])
 	return colab
+
 
 def retorna_user(cpf):
 	cursor = con.cursor

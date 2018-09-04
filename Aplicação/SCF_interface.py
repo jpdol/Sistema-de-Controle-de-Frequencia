@@ -396,16 +396,20 @@ class TelaConsulta(tk.Frame):
 	def update(self):
 		lista_lab = retorna_lista_lab()
 		lista_lab.insert(0,"*Selecione o laboratório*")
-		self.entrada_lab['values'] = lista_lab
+		self.entrada_lab['values'] = lista_lab + ['Não Ativos']
 		self.entrada_lab.current(0)
 
 	def validar(self, entrada_lab, event=None):
-		valido = validar_consulta(entrada_lab)
-		if valido:
+		if  entrada_lab.get() == 'Não Ativos':
 			self.controller.frames[TelaConsulta2].setLab(entrada_lab.get())
 			self.controller.mostrar_frame(TelaConsulta2)
 		else:
-			pass
+			valido = validar_consulta(entrada_lab)
+			if valido:
+				self.controller.frames[TelaConsulta2].setLab(entrada_lab.get())
+				self.controller.mostrar_frame(TelaConsulta2)
+			else:
+				pass
 
 class TelaConsulta2(tk.Frame):
 
@@ -431,6 +435,7 @@ class TelaConsulta2(tk.Frame):
 		self.bind('<Return>', lambda event:self.validar(self.entrada_colab, event))	
 
 		bt_ok = Button(self, width=10, text="Avançar", bg="white", command = lambda:self.validar(self.entrada_colab)).place(x=275, y=177)
+		
 		bt_consulta_lab = Button(self, width=20, text="Consultar laboratório", bg="white", command=lambda:self.consultar_lab()).pack(side=RIGHT, anchor = SE, pady=4, padx=4)
 
 		
@@ -454,18 +459,26 @@ class TelaConsulta2(tk.Frame):
 		self.lab = lab
 
 	def validar(self, entrada_colab, event=None):
-		valido = validar_consulta_2(entrada_colab, self.lab)		
-		if valido:
+		if self.lab == 'Não Ativos':
 			colab = retorna_colab(entrada_colab, self.lab)
 			self.controller.frames[TelaDadosColaborador].setColab(colab)
 			self.controller.mostrar_frame(TelaDadosColaborador)
-		else:
-			pass
+		else:	
+			valido = validar_consulta_2(entrada_colab, self.lab)		
+			if valido:
+				colab = retorna_colab(entrada_colab, self.lab)
+				self.controller.frames[TelaDadosColaborador].setColab(colab)
+				self.controller.mostrar_frame(TelaDadosColaborador)
+			else:
+				pass
 
 	def consultar_lab(self):
-		dados_lab = retorna_dados_lab(self.lab)
-		self.controller.frames[TelaDadosLaboratorio].setLab(dados_lab)
-		self.controller.mostrar_frame(TelaDadosLaboratorio)
+		if self.lab == 'Não Ativos':
+			pop_up('ERROR', 'Opção Inválida')
+		else:
+			dados_lab = retorna_dados_lab(self.lab)
+			self.controller.frames[TelaDadosLaboratorio].setLab(dados_lab)
+			self.controller.mostrar_frame(TelaDadosLaboratorio)
 
 class TelaDadosColaborador(tk.Frame):
 
@@ -563,7 +576,6 @@ class TelaDadosColaborador(tk.Frame):
 		entrada_dt_ing, self.entrada_status, entrada_senha, entrada_confirma_senha, entrada_foto, self.colab.cpf)).place(x=275, y=600)
 
 		bt_remover = Button(self, width=20, text="Excluir colaborador", bg="white", command=lambda:self.remover_colab()).pack(side=RIGHT, anchor = SE, pady=4, padx=4)
-
 		bt_voltar = Button(self, width=10, text="Voltar", bg="white", command=lambda:controller.mostrar_frame(TelaConsulta2)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)
 
 	def update(self):

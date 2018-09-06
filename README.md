@@ -15,7 +15,7 @@ Sistema para controle de entrada e saída de colaboradores da empresa HUB - Tecn
 
 ### Documentação:
 
-  - Redesenho de Processor (IDEF0)
+  - Redesenho de Processo (IDEF0)
   - Diagrama de Casos de Uso (UML)
   - Diagrama de Classes (UML)
   - Diagrama E-R

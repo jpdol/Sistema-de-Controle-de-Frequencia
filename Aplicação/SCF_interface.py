@@ -37,6 +37,7 @@ class SCFapp(tk.Tk):
 				self.title(frame.titulo)
 				frame.focus_set()
 				frame.tkraise()
+				
 			else:
 				frame = cont(self.container, self)
 				self.frames[cont] = frame
@@ -460,9 +461,11 @@ class TelaConsulta2(tk.Frame):
 
 	def validar(self, entrada_colab, event=None):
 		if self.lab == 'Não Ativos':
+			
 			colab = retorna_colab(entrada_colab, self.lab)
 			self.controller.frames[TelaDadosColaborador].setColab(colab)
 			self.controller.mostrar_frame(TelaDadosColaborador)
+			
 		else:	
 			valido = validar_consulta_2(entrada_colab, self.lab)		
 			if valido:
@@ -598,6 +601,8 @@ class TelaDadosColaborador(tk.Frame):
 			self.entrada_func.current(lista_func.index(self.colab.funcao))
 
 		lista_status = ['Ativo', 'Afastado']
+		if self.colab.status == 'Não Ativo':
+			lista_status.append('Não Ativo')
 		self.entrada_status['values'] = lista_status
 		self.nome.set(self.colab.nome)
 		self.ch.set(self.colab.ch)
@@ -606,7 +611,6 @@ class TelaDadosColaborador(tk.Frame):
 		self.dt_ent.set(self.colab.dtIngresso)
 		self.senha.set(self.colab.senha)
 		self.confirmar_senha.set(self.colab.senha)
-		lista_status = ['Ativo', 'Afastado']
 		self.entrada_status.current(lista_status.index(self.colab.status))
 
 	def setColab(self, colab):

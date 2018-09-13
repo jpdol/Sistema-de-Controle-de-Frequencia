@@ -239,6 +239,7 @@ def chamar_perfil_saida(cpf, tela_anterior):
 		
 	except Exception as e:
 		pass
+
 	tela_perfil.after(3000, lambda: pre_tela_principal(tela_perfil))
 	
 
@@ -364,6 +365,22 @@ class Controlador(Tk):
 		self.after(1000, self.update_label)
 
 
+def get_data_atual():
+	return retorna_datetime().split(' ')[0]
+
+def conferir_saidas():
+	data_atual = get_data_atual()
+	cursor = con.cursor
+	cursor.execute("SELECT entrada FROM Frequencia WHERE saida is null")
+	lista = []
+	for entrada in cursor.fetchall():
+		lista.append(str(entrada[0]))
+	for entrada in lista:
+		data = entrada.split(' ')[0]
+		if data < data_atual:	
+			cursor.execute("UPDATE Frequencia SET saida=entrada WHERE entrada=(?) AND saida is null", (entrada,))
+	con.conexao.commit()
+
 
 def main():
 	conexao.reset_input_buffer()
@@ -372,5 +389,6 @@ def main():
 
 
 if linha == b'1\r\n':
+	conferir_saidas()
 	main()
 	conexao.close()

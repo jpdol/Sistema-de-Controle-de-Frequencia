@@ -76,7 +76,7 @@ class TelaLogin(tk.Frame):
 		controller.resizable(0,0)
 		
 		#Logo
-		imagem = tk.PhotoImage(file=r"\\LSEHOST\Documents\SCF\imagens\hub.png")
+		imagem = tk.PhotoImage(file=r"\\Lsehost\scf\imagens\hub.png")
 		lb_image = tk.Label(self, image = imagem, bg="white")
 		lb_image.image = imagem
 		lb_image.pack(pady=30)

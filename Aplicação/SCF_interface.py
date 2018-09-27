@@ -81,7 +81,7 @@ class TelaLogin(tk.Frame):
 		lb_image.image = imagem
 		lb_image.pack(pady=30)
 
-		lb_login = tk.Label(self, text="Login:", bg="white").place(x=120, y=150)
+		lb_login = tk.Label(self, text="CPF:", bg="white").place(x=120, y=150)
 		self.login_string = StringVar()
 		entrada_login = tk.Entry(self, width=40, bg="white", textvariable=self.login_string)
 		entrada_login.place(x=120, y=170)

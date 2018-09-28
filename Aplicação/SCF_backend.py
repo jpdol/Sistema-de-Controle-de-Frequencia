@@ -323,7 +323,7 @@ def validar_chamada_historico(lab, mes, ano, tipo):
 					if laboratorio != "Não Ativos":
 						cursor.execute('''SELECT Nome, entrada, saida
 										  FROM Colaborador as C, Frequencia as F
-										  WHERE C.Lab = ? and C.cpf == F.cpf and F.entrada LIKE ? and F.saida IS NOT NULL 
+										  WHERE C.Lab = ? and C.cpf == F.cpf and  C.Status != "Não Ativo" and F.entrada LIKE ? and F.saida IS NOT NULL 
 										  ORDER BY Nome''',(laboratorio, data_com_dia+"%"))
 					else:
 						cursor.execute('''SELECT Nome, entrada, saida

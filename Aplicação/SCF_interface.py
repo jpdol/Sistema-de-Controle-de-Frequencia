@@ -782,8 +782,9 @@ class TelaHistorico(tk.Frame):
 		tk.Frame.__init__(self, parent, width=500, height=350)
 		self.controller.resizable(0,0)
 
-		lb = Label (self, text="Histórico", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=20)
-		bt_voltar = Button(self, text="Voltar", bg="white", command = lambda:self.voltar()).pack(side=TOP, anchor=NW, pady=4, padx=4)
+		lb = Label (self, text="Histórico\n\n", fg= "orange", bg="white", font=["Verdana", 16]).pack(pady=20)
+		bt_gerar_relatorio = Button(self, text="Gerar relatório excel", bg="white", command= lambda:self.gerar_relatorio()).place(x = 417, y = 85)
+		bt_voltar = Button(self, text="Voltar", bg="white", command = lambda:self.voltar()).place(x = 4, y = 85)
 
 
 	def update(self):
@@ -795,6 +796,13 @@ class TelaHistorico(tk.Frame):
 			self.header = ['Nome', 'Entrada', 'Saida']
 
 		self = McListBox(self, self.header, self.tuplas)
+
+	def gerar_relatorio(self):
+		if self.tipo == 'r':
+			gerar_relatorio_resumido(self.tuplas, self.lab, self.mes, self.ano)
+		elif self.tipo == 'd':
+			gerar_relatorio_detalhado(self.lab, self.mes, self.ano)
+
 
 	def voltar(self):
 		self.controller.frames[TelaHistorico].destroy()

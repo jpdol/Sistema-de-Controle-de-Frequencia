@@ -1,12 +1,15 @@
 from tkinter import *
 from tkinter import ttk
-from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import askopenfilename, asksaveasfile, asksaveasfilename
 import datetime
 from datetime import datetime, timedelta
 import SCF_interface as inter
 import sqlite3
 import tkinter.font as tkFont
 import tkinter.ttk as ttk
+from openpyxl import Workbook
+from openpyxl.drawing.image import Image
+from openpyxl.styles import Alignment, Font
 
 def criar_conexao():
 	global con
@@ -148,7 +151,7 @@ def retorna_lista_colab(lab):
 	if lab == 'Não Ativos':
 		cursor.execute("SELECT Nome FROM Colaborador WHERE Status='Não Ativo'")
 	else:
-		cursor.execute("SELECT Nome FROM Colaborador WHERE Lab = '%s' and Status='Ativo' "%lab)
+		cursor.execute("SELECT Nome FROM Colaborador WHERE Lab = '%s' and Status='Ativo' ORDER BY Nome"%lab)
 	lista = []
 	for nome in cursor.fetchall():
 		lista.append(str(nome[0]))
@@ -164,10 +167,17 @@ def retorna_dados_lab(lab):
 
 def retorna_colab(nome, lab):
 	cursor = con.cursor
-	if lab == 'Não Ativos':
-		cursor.execute("SELECT * FROM Colaborador WHERE Nome = '%s' and Status = 'Não Ativo'"%nome.get())
+	if type(nome) != str:
+		if lab == 'Não Ativos':
+			cursor.execute("SELECT * FROM Colaborador WHERE Nome = '%s' and Status = 'Não Ativo'"%nome.get())
+		else:
+			cursor.execute("SELECT * FROM Colaborador WHERE Nome = '%s' and Lab='%s'"%(nome.get(), lab))
 	else:
-		cursor.execute("SELECT * FROM Colaborador WHERE Nome = '%s' and Lab='%s'"%(nome.get(), lab))
+		if lab == 'Não Ativos':
+			cursor.execute("SELECT * FROM Colaborador WHERE Nome = '%s' and Status = 'Não Ativo'"%nome)
+		else:
+			cursor.execute("SELECT * FROM Colaborador WHERE Nome = '%s' and Lab='%s'"%(nome, lab))
+
 	lista = cursor.fetchall()
 	tupla = lista[0]
 	colab = Colaborador(tupla[0], tupla[1], tupla[2], tupla[3], tupla[4], tupla[5], tupla[7], tupla[8], tupla[11])
@@ -422,6 +432,304 @@ def validar_consulta_2(nome_colab, lab):
 	except:
 		inter.pop_up("ERROR", "Consulta Inválida")
 		return False
+
+def retorna_data_sem_hora(data_str):
+	split1 = data_str.split(" ")
+	return split1[0]
+
+def retorna_dia(data_str):
+	split1 = data_str.split(" ")
+	split2 = split1[0]
+	data = split2.split("/")
+	return data[2]
+
+def retorna_hora(data_str):
+	split1 = data_str.split(" ")
+	return split1[1]
+
+
+
+def gerar_relatorio_resumido(tuplas, lab, mes, ano):
+	cursor = con.cursor
+	cursor.execute("SELECT Sigla FROM Laboratorio WHERE Nome=(?)",(lab,))
+	sigla = cursor.fetchone()[0]
+
+	file_name = "Relatório resumido-"+sigla+"-"+mes+"-"+ano
+	file_path = asksaveasfilename(title = "Select file", initialfile=file_name, filetypes = (("Arquivos Excel","*.xlsx"),))
+	file_path = file_path+".xlsx"
+
+	alignment_left = Alignment(horizontal='left')
+	alignment_right = Alignment(horizontal='right')
+	alignment_center = Alignment(horizontal='center')
+
+	font_normal = Font(name='Arial')
+	font_bold = Font(name='Arial',bold=True)
+
+	#Criando workbook
+	wb = Workbook()
+
+	ws_resumido = wb.active
+	ws_resumido.title = "Histórico resumido"
+
+	#inserindo logo 
+	img = Image(r"\\LSEHOST\Documents\SCF\imagens\hub.png")
+	ws_resumido.add_image(img,'A1')
+
+	#Formatando células para data de emissão do relatório
+	ws_resumido.merge_cells('F2:G2')
+	ws_resumido.merge_cells('H2:I2')
+
+	cell_emissao = ws_resumido['F2']
+	cell_data = ws_resumido['H2']
+
+	cell_emissao.alignment, cell_emissao.font = alignment_right, font_normal
+	cell_data.alignment, cell_data.font = alignment_left, font_normal
+
+	now = datetime.now()
+	if now.month < 10:
+		mes_emissao = "0"+str(now.month)
+	else:
+		mes_emissao = str(now.month)
+
+	ws_resumido['F2'] = "Data de emissão:"
+	ws_resumido['H2'] = str(now.day)+"/"+mes_emissao+"/"+str(now.year)
+
+	#Formatando células para nome do laboratorio
+	ws_resumido.merge_cells('A7:I7')
+	cell_lab = ws_resumido['A7']
+	cell_lab.font, cell_lab.alignment = font_normal, alignment_center
+	ws_resumido['A7'] = lab
+
+	#Formatando células mes e ano
+	cell_mes_str = ws_resumido['A9']
+	cell_mes = ws_resumido['B9']
+
+	cell_ano_str = ws_resumido['H9']
+	cell_ano = ws_resumido['I9']
+
+	cell_mes_str.font, cell_mes.font, cell_ano_str.font, cell_ano.font = font_normal, font_normal, font_normal, font_normal
+	cell_mes_str.alignment, cell_ano_str.alignment = alignment_right, alignment_right
+	cell_mes.alignment, cell_ano.alignment = alignment_left, alignment_left
+
+
+	ws_resumido['A9'] = "MÊS:"
+	ws_resumido['B9'] = mes
+	ws_resumido['H9'] = "ANO:"
+	ws_resumido['I9'] = ano #Puxar do banco
+
+	# Nome e qtd horas
+
+	ws_resumido.merge_cells('G11:I11')
+
+	cell_nome = ws_resumido['A11']
+	cell_qtd = ws_resumido['G11']
+
+	cell_nome.font, cell_qtd.font = font_bold, font_bold
+	cell_nome.alignment, cell_qtd.alignment = alignment_left, alignment_center
+
+	ws_resumido['A11'] = "NOME"
+	ws_resumido['G11'] = "QTD HORAS POR MÊS"
+
+	row_base = 12
+
+	for colaborador in tuplas:
+		row_name = 'A' + str(row_base)
+		row_time = 'H' + str(row_base)
+		ws_resumido[row_name] = colaborador[0]
+		ws_resumido[row_time] = colaborador[1]
+		ws_resumido[row_time].alignment = alignment_center
+		row_base+=1
+	
+	wb.template = False
+	wb.save(file_path)
+
+def gerar_relatorio_detalhado(lab, mes, ano):
+	dict_mes = {'Janeiro': '01','Fevereiro': '02','Março': '03','Abril': '04','Maio': '05','Junho': '06',
+						'Julho': '07','Agosto': '08','Setembro': '09','Outubro': '10','Novembro': '11','Dezembro': '12'}
+	cursor = con.cursor
+	cursor.execute("SELECT Sigla FROM Laboratorio WHERE Nome=(?)",(lab,))
+	sigla = cursor.fetchone()[0]
+
+	file_name = "Relatório detalhado-"+sigla+"-"+mes+"-"+ano
+	file_path = asksaveasfilename(title = "Select file", initialfile=file_name, filetypes = (("Arquivos Excel","*.xlsx"),))
+	file_path = file_path+".xlsx"
+
+	alignment_left = Alignment(horizontal='left')
+	alignment_right = Alignment(horizontal='right')
+	alignment_center = Alignment(horizontal='center')
+
+	font_normal = Font(name='Arial')
+	font_bold = Font(name='Arial',bold=True)
+
+	lista_colab = retorna_lista_colab(lab)
+
+	#Criando workbook
+	wb = Workbook()
+
+	ws_array = []
+	ws_first = wb.active
+	ws_first.title = lista_colab[0]
+	ws_dict = {}
+	ws_dict[lista_colab[0]] = ws_first
+	for i in range(1,len(lista_colab)):
+		ws_temp = wb.create_sheet(lista_colab[i])
+		ws_dict[lista_colab[i]] = ws_temp
+
+	for colaborador in lista_colab:
+		#inserindo logo
+		colab = retorna_colab(colaborador, lab)
+		current_sheet = ws_dict[colaborador] 
+		img = Image('imagens/hub.png')
+		current_sheet.add_image(img,'A1')
+
+			#Formatando células para data de emissão do relatório
+		current_sheet.merge_cells('F2:G2')
+		current_sheet.merge_cells('H2:I2')
+
+		cell_emissao = current_sheet['F2']
+		cell_data = current_sheet['H2']
+
+		cell_emissao.alignment, cell_emissao.font = alignment_right, font_normal
+		cell_data.alignment, cell_data.font = alignment_left, font_normal
+
+		now = datetime.now()
+		if now.month < 10:
+			mes_emissao = "0"+str(now.month)
+		else:
+			mes_emissao = str(now.month)
+
+		current_sheet['F2'] = "Data de emissão:"
+		current_sheet['H2'] = str(now.day)+"/"+mes_emissao+"/"+str(now.year)
+
+		name_cell = current_sheet['A8']
+		name_cell.font = font_normal
+		current_sheet['A8'] = "NOME: "+colaborador 
+
+		lab_cell = current_sheet['A9']
+		lab_cell.font = font_normal
+		current_sheet['A9'] = "LABORATÓRIO: "+lab
+
+		funcao_cell = current_sheet['A10']
+		funcao_cell.font = font_normal
+		current_sheet['A10'] = "FUNÇÃO: "+colab.funcao
+
+		cell_mes_str = current_sheet['A12']
+
+		cell_ano_str = current_sheet['H12']
+		cell_ano = current_sheet['I12']
+
+		cell_mes_str.font, cell_ano_str.font, cell_ano.font = font_normal, font_normal, font_normal
+		cell_mes_str.alignment, cell_ano_str.alignment = alignment_left, alignment_right
+		cell_ano.alignment = alignment_left
+
+		current_sheet.merge_cells('A12:B12')
+
+		current_sheet['A12'] = "MÊS: "+mes
+		current_sheet['H12'] = "ANO:"
+		current_sheet['I12'] = ano
+
+		cell_day = current_sheet['A14']
+		cell_day.font, cell_day.alignment = font_bold, alignment_center
+		current_sheet['A14'] = "DIA"
+
+		current_sheet.merge_cells('C14:D14')
+		current_sheet.merge_cells('H14:I14')
+
+
+		cell_ingress = current_sheet['C14']
+		cell_ingress.font, cell_ingress.alignment = font_bold, alignment_center
+		current_sheet['C14'] = "ENTRADA"
+
+		cell_exit = current_sheet['F14']
+		cell_exit.font, cell_exit.alignment = font_bold, alignment_center
+		current_sheet['F14'] = "SAÍDA"
+
+		cell_cont = current_sheet['H14']
+		cell_cont.font, cell_cont.alignment = font_bold, alignment_center
+		current_sheet['H14'] = "ACUMULADO"
+
+		data = ano+"/"+dict_mes[mes]
+		if lab != "Não Ativos":
+			cursor.execute('''SELECT entrada, saida
+							  FROM Colaborador as C, Frequencia as F
+							  WHERE C.cpf == F.cpf and C.Nome = ? and C.Lab = ? and F.entrada LIKE ? and F.saida IS NOT NULL 
+							  ORDER BY Nome''',(colaborador, lab, data+"%"))
+		else:
+			cursor.execute('''SELECT Nome, entrada, saida
+							  FROM Colaborador as C, Frequencia as F
+							  WHERE C.Nome = ? and C.cpf == F.cpf and C.Status = "Não Ativo" and F.entrada LIKE ? and F.saida IS NOT NULL 
+							  ORDER BY entrada''',(colaborador, data_com_dia+"%"))
+		frequencias = cursor.fetchall()
+		
+
+		array_frequencias = []
+		array_size = len(frequencias)
+		if array_size > 0:
+			current_frequencia = retorna_data_sem_hora(frequencias[0][0])
+			flag = True
+			i = 0
+			while(flag):
+				frequencia_array = []
+				while(flag == True and current_frequencia == retorna_data_sem_hora(frequencias[i][0])):
+					frequencia_array.append((frequencias[i][0],frequencias[i][1]))
+					i+=1
+					if i == array_size:
+						flag = False
+				if flag==True:
+					current_frequencia = retorna_data_sem_hora(frequencias[i][0])
+				array_frequencias.append(frequencia_array)
+		else:
+			pass
+		
+
+		row_base = 15
+		for day in array_frequencias:
+			contador = timedelta()
+			for ingress in day:
+				merge_str_ingress = 'C'+str(row_base)+":"+'D'+str(row_base)
+				merge_str_count = 'H'+str(row_base)+":"+'I'+str(row_base)
+				current_sheet.merge_cells(merge_str_ingress)
+				current_sheet.merge_cells(merge_str_count)
+
+				row_day_str = 'A' + str(row_base)
+				row_ingress_str = 'C' + str(row_base)
+				row_exit_str = 'F' + str(row_base)
+				row_count_str = 'H' + str(row_base)
+
+				row_day = current_sheet[row_day_str]
+				row_ingress = current_sheet[row_ingress_str]
+				row_exit = current_sheet[row_exit_str]
+				row_count = current_sheet[row_count_str]
+
+				row_day.font, row_ingress.font, row_exit.font, row_count.font = font_normal, font_normal, font_normal, font_normal
+				row_ingress.alignment, row_exit.alignment, row_count.alignment, row_day.alignment = alignment_center, alignment_center, alignment_center, alignment_center
+
+
+
+				current_sheet[row_day_str] = retorna_dia(ingress[0])
+				current_sheet[row_ingress_str] = retorna_hora(ingress[0])
+				current_sheet[row_exit_str] = retorna_hora(ingress[1])
+				delta = timedelta()
+				delta = retorna_objeto_date(ingress[1])-retorna_objeto_date(ingress[0])
+				contador = contador + delta
+				current_sheet[row_count_str] = delta
+				row_base+=1
+
+			merge_total = 'H'+str(row_base)+":"+'I'+str(row_base)
+			current_sheet.merge_cells(merge_total)
+
+			total_str = 'A'+str(row_base)
+			total_num_str = 'H'+str(row_base)
+			total_cell = current_sheet[total_str]
+			total_num_cell = current_sheet[total_num_str]
+			total_cell.font, total_cell.alignment, total_num_cell.font, total_num_cell.alignment = font_bold, alignment_left, font_bold, alignment_center
+			current_sheet[total_str]="TOTAL"
+			current_sheet[total_num_str] = contador
+			row_base +=2
+
+	wb.template = False
+	wb.save(file_path)
+
 
 class McListBox(object):
 	def __init__(self, container_o, header, lista):

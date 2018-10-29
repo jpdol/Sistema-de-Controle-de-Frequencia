@@ -19,7 +19,6 @@ Sistema para controle de entrada e saída de colaboradores da empresa HUB - Tecn
   - Diagrama de Casos de Uso (UML)
   - Diagrama de Classes (UML)
   - Diagrama E-R
-  - Fluxo de Telas
   - Documento de Visão Geral
 
 ### Desenvolvedores:

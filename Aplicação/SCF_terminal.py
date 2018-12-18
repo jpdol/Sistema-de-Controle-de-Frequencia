@@ -11,7 +11,7 @@ import os
 
 class Conexao():
 	def __init__(self):
-		self.path = r"\\LSEHOST\Documents\SCF\SCF.db"
+		self.path = r"\\Lsehost\scf\SCF.db"
 		self.conexao = sqlite3.connect(self.path)
 		self.cursor = self.conexao.cursor()
 		self.cursor.execute("CREATE TABLE IF NOT EXISTS Digital (cpf VARCHAR(11), idDigital INT, PRIMARY KEY(cpf))")
@@ -34,9 +34,15 @@ con = Conexao()
 
 
 #Conexao Serial:
-porta = "COM7"
+porta = "COM3"
 velocidade = 9600
-conexao = serial.Serial(porta, velocidade)
+
+for i in range(20):
+	try:
+		conexao = serial.Serial(porta, velocidade)
+		break
+	except:
+		time.sleep(0.1)
 linha = conexao.readline()
 
 class Colaborador():
@@ -272,7 +278,7 @@ def cadastrar_digital_2(tela_anterior, login):
 	tela_login.title("Sistema de Controle de Frequência") 
 	
 	#Logo
-	imagem = PhotoImage(file=r"\\LSEHOST\Documents\SCF\imagens\hub2.png")
+	imagem = PhotoImage(file=r"\\Lsehost\scf\imagens\hub2.png")
 	lb_image = Label(tela_login, image = imagem, bg="white")
 	lb_image.image = imagem
 	lb_image.pack(pady=110)
@@ -290,7 +296,7 @@ def chamar_tela_login(tela_anterior):
 	tela_login.title("Sistema de Controle de Frequência") #título da janela
 
 	#Logo
-	imagem = PhotoImage(file=r"\\LSEHOST\Documents\SCF\imagens\hub2.png")
+	imagem = PhotoImage(file=r"\\Lsehost\scf\imagens\hub2.png")
 	lb_image = Label(tela_login, image = imagem, bg="white")
 	lb_image.image = imagem
 	lb_image.pack(pady=110)
@@ -320,6 +326,9 @@ def pop_up(title, label):
 	pop_up.resizable(0,0)
 	lb = Label (pop_up, text=label, bg="white").pack(pady=20)
 	
+def close(tela):
+	tela.destroy()
+
 class Controlador(Tk):
 	def __init__(self, *args, **kwargs):
 		Tk.__init__(self, *args, **kwargs)
@@ -327,14 +336,15 @@ class Controlador(Tk):
 		self.attributes('-fullscreen', True) #dimensoes da janela --> Largura x Altura + DistanciaDaMargemEsquerda + DistanciaDaMargemSuperior
 		self.title("Sistema de Controle de Frequência") #título da janela
 
-		self.imagem = PhotoImage(file=r"\\LSEHOST\Documents\SCF\imagens\hub2.png")
+		self.imagem = PhotoImage(file=r"\\Lsehost\scf\imagens\hub2.png")
 		self.lb_image = Label(self, image = self.imagem, bg="white")
 		self.lb_image.image = self.imagem
 		self.lb_image.pack(pady=110)		
 
 
 		self.bt_cadastrar = Button(self, text="Primeiro acesso", width=15, command=partial(chamar_tela_login, self), bg ="white")
-		self.bt_cadastrar.pack(pady=2)		
+		self.bt_cadastrar.pack(pady=2)
+		self.bt_close = Button(self, width=10, text="Fechar", bg="white", command=partial(close, self)).pack(side=BOTTOM, anchor=SW, pady=4, padx=4)	
 		self.update_label()
 
 	def update_label(self):
